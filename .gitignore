@@ -1,0 +1,24 @@
+# Gradle / build
+.gradle/
+build/
+/app/build/
+.kotlin/
+
+# Android Studio
+.idea/
+*.iml
+.cxx/
+captures/
+.externalNativeBuild/
+
+# Local machine config
+local.properties
+
+# Release signing — NEVER commit these
+keystore.properties
+*.jks
+*.keystore
+
+# OS
+.DS_Store
+Thumbs.db
