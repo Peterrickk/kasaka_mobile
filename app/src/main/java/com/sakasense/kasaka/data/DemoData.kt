@@ -22,6 +22,24 @@ import kotlin.random.Random
 /** The same demo farm the web dashboard shows (Maria Santos, Baybay & Tacloban). */
 object DemoData {
 
+    // Warm, humid Leyte weather: temperature rises as humidity falls.
+    private fun temperature(w: Double, rnd: Random) = ((28 + 0.8 * w + (rnd.nextDouble() - 0.5) * 1.5) * 10).roundToInt() / 10.0
+    private fun humidity(w: Double, rnd: Random) = ((58 - 2.5 * w + (rnd.nextDouble() - 0.5) * 6) * 10).roundToInt() / 10.0
+
+    /**
+     * Gives demo readings saved before the app knew about temperature and humidity (DB v1) the same
+     * kind of values a fresh seed has. Manual readings are left alone: the farmer typed what they had.
+     */
+    suspend fun backfillClimate(db: KasakaDatabase, now: Long = System.currentTimeMillis()) {
+        val missing = db.readings().withoutClimate(listOf(ReadingSource.LIVE, ReadingSource.SYNCED_SD_CARD, ReadingSource.DEMO))
+        missing.forEach { r ->
+            val a = ((now - r.timestamp) / SoilRepository.DAY).toInt()
+            val w = 2 * sin(a / 3.0)
+            val rnd = Random(r.id.hashCode())
+            db.readings().setClimate(r.id, temperature(w, rnd), humidity(w, rnd))
+        }
+    }
+
     private fun hoursAgo(h: Double, now: Long) = now - (h * HOUR).toLong()
 
     private fun daysAgoAt(days: Int, hour: Int): Long = Calendar.getInstance().apply {
@@ -86,6 +104,8 @@ object DemoData {
                     p = (spec.base.p + 0.8 * w + (rnd.nextDouble() - 0.5) * 2).roundToInt(),
                     k = (spec.base.k + 1.2 * w + (rnd.nextDouble() - 0.5) * 3).roundToInt(),
                     source = if (a > 3 && a % 5 == 0) ReadingSource.SYNCED_SD_CARD else ReadingSource.LIVE,
+                    temperatureC = temperature(w, rnd),
+                    humidityPct = humidity(w, rnd),
                 )
             }
             db.readings().insert(readings)

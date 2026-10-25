@@ -1,0 +1,523 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 2,
+    "identityHash": "e23b3d61f0345389106deee5e7888650",
+    "entities": [
+      {
+        "tableName": "farms",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `location` TEXT NOT NULL, `type` TEXT NOT NULL, `lat` REAL, `lng` REAL, `createdAt` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "location",
+            "columnName": "location",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lat",
+            "columnName": "lat",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "lng",
+            "columnName": "lng",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "plots",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `farmId` TEXT NOT NULL, `name` TEXT NOT NULL, `cropCurrent` TEXT, `areaLabel` TEXT NOT NULL, `status` TEXT NOT NULL, `layoutCol` INTEGER NOT NULL, `layoutRow` INTEGER NOT NULL, `colSpan` INTEGER NOT NULL, `rowSpan` INTEGER NOT NULL, `createdAt` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`farmId`) REFERENCES `farms`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "farmId",
+            "columnName": "farmId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "cropCurrent",
+            "columnName": "cropCurrent",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "areaLabel",
+            "columnName": "areaLabel",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "status",
+            "columnName": "status",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "layoutCol",
+            "columnName": "layoutCol",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "layoutRow",
+            "columnName": "layoutRow",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "colSpan",
+            "columnName": "colSpan",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "rowSpan",
+            "columnName": "rowSpan",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_plots_farmId",
+            "unique": false,
+            "columnNames": [
+              "farmId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_plots_farmId` ON `${TABLE_NAME}` (`farmId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "farms",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "farmId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "devices",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `plotId` TEXT, `serialNumber` TEXT NOT NULL, `model` TEXT NOT NULL, `lastSeenAt` INTEGER NOT NULL, `batteryPercent` INTEGER, `status` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "plotId",
+            "columnName": "plotId",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "serialNumber",
+            "columnName": "serialNumber",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "model",
+            "columnName": "model",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lastSeenAt",
+            "columnName": "lastSeenAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "batteryPercent",
+            "columnName": "batteryPercent",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "status",
+            "columnName": "status",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_devices_plotId",
+            "unique": false,
+            "columnNames": [
+              "plotId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_devices_plotId` ON `${TABLE_NAME}` (`plotId`)"
+          },
+          {
+            "name": "index_devices_serialNumber",
+            "unique": true,
+            "columnNames": [
+              "serialNumber"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_devices_serialNumber` ON `${TABLE_NAME}` (`serialNumber`)"
+          }
+        ]
+      },
+      {
+        "tableName": "readings",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `plotId` TEXT NOT NULL, `deviceSerial` TEXT, `timestamp` INTEGER NOT NULL, `ph` REAL NOT NULL, `n` INTEGER NOT NULL, `p` INTEGER NOT NULL, `k` INTEGER NOT NULL, `source` TEXT NOT NULL, `temperatureC` REAL, `humidityPct` REAL, PRIMARY KEY(`id`), FOREIGN KEY(`plotId`) REFERENCES `plots`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "plotId",
+            "columnName": "plotId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "deviceSerial",
+            "columnName": "deviceSerial",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "timestamp",
+            "columnName": "timestamp",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ph",
+            "columnName": "ph",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "n",
+            "columnName": "n",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "p",
+            "columnName": "p",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "k",
+            "columnName": "k",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "source",
+            "columnName": "source",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "temperatureC",
+            "columnName": "temperatureC",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "humidityPct",
+            "columnName": "humidityPct",
+            "affinity": "REAL"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_readings_plotId_timestamp",
+            "unique": false,
+            "columnNames": [
+              "plotId",
+              "timestamp"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_readings_plotId_timestamp` ON `${TABLE_NAME}` (`plotId`, `timestamp`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "plots",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "plotId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "recommendations",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `plotId` TEXT NOT NULL, `readingId` TEXT, `timestamp` INTEGER NOT NULL, `healthIndex` INTEGER NOT NULL, `rankedCrops` TEXT NOT NULL, `guidebookCode` TEXT NOT NULL, `fertilizerProduct` TEXT NOT NULL, `fertilizerAmount` TEXT NOT NULL, `fertilizerTiming` TEXT NOT NULL, `fertilizerNotes` TEXT NOT NULL, `insight` TEXT NOT NULL, `generatedOnDevice` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`plotId`) REFERENCES `plots`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "plotId",
+            "columnName": "plotId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "readingId",
+            "columnName": "readingId",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "timestamp",
+            "columnName": "timestamp",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "healthIndex",
+            "columnName": "healthIndex",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "rankedCrops",
+            "columnName": "rankedCrops",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "guidebookCode",
+            "columnName": "guidebookCode",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "fertilizerProduct",
+            "columnName": "fertilizerProduct",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "fertilizerAmount",
+            "columnName": "fertilizerAmount",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "fertilizerTiming",
+            "columnName": "fertilizerTiming",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "fertilizerNotes",
+            "columnName": "fertilizerNotes",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "insight",
+            "columnName": "insight",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "generatedOnDevice",
+            "columnName": "generatedOnDevice",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_recommendations_plotId_timestamp",
+            "unique": false,
+            "columnNames": [
+              "plotId",
+              "timestamp"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_recommendations_plotId_timestamp` ON `${TABLE_NAME}` (`plotId`, `timestamp`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "plots",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "plotId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "alerts",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `plotId` TEXT NOT NULL, `type` TEXT NOT NULL, `message` TEXT NOT NULL, `triggeredAt` INTEGER NOT NULL, `resolvedAt` INTEGER, PRIMARY KEY(`id`), FOREIGN KEY(`plotId`) REFERENCES `plots`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "plotId",
+            "columnName": "plotId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "message",
+            "columnName": "message",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "triggeredAt",
+            "columnName": "triggeredAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "resolvedAt",
+            "columnName": "resolvedAt",
+            "affinity": "INTEGER"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_alerts_plotId",
+            "unique": false,
+            "columnNames": [
+              "plotId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_alerts_plotId` ON `${TABLE_NAME}` (`plotId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "plots",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "plotId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e23b3d61f0345389106deee5e7888650')"
+    ]
+  }
+}

@@ -19,6 +19,7 @@ import com.sakasense.kasaka.data.Session
 import com.sakasense.kasaka.data.ThemeMode
 import com.sakasense.kasaka.ui.KasakaRoot
 import com.sakasense.kasaka.ui.theme.KasakaTheme
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -32,6 +33,10 @@ class MainActivity : ComponentActivity() {
 
         val container = (application as KasakaApp).container
         lifecycleScope.launch { runCatching { container.soil.refreshAlerts() } }
+        // A demo account signed in before the app read temperature/humidity has readings without them.
+        lifecycleScope.launch {
+            runCatching { if (container.session.session.first().user?.isDemo == true) container.soil.backfillDemoClimate() }
+        }
 
         setContent {
             val session: Session? by container.session.session.collectAsStateWithLifecycle(initialValue = null)

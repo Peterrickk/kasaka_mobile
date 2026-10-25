@@ -34,7 +34,7 @@ The Reading characteristic must have the standard CCCD descriptor (`0x2902`) so 
 ## Reading payload
 
 ```json
-{"ph":6.21,"n":48,"p":40,"k":58,"bat":86,"sn":"KS-ESP32-004822","ts":1730000000,
+{"ph":6.21,"n":48,"p":40,"k":58,"temp":28.4,"hum":57.2,"bat":86,"sn":"KS-ESP32-004822","ts":1730000000,
  "crops":[{"crop":"Tomato","score":74},{"crop":"Sweet potato","score":68}],"gb":"3902"}
 ```
 
@@ -42,6 +42,8 @@ The Reading characteristic must have the standard CCCD descriptor (`0x2902`) so 
 |---|---|---|---|
 | `ph` | number | yes | Soil pH |
 | `n`, `p`, `k` | integer | yes | Nitrogen, phosphorus, potassium in mg/kg |
+| `temp` | number | no | Temperature in °C (1 decimal) |
+| `hum` | number | no | Relative humidity in % (1 decimal) |
 | `bat` | integer | no | Battery % |
 | `sn` | string | no | Serial number (falls back to Info `sn`) |
 | `ts` | integer | no | Unix time (seconds) of the reading |
@@ -54,5 +56,5 @@ The Reading characteristic must have the standard CCCD descriptor (`0x2902`) so 
 
 ## Without Bluetooth
 
-Farmers can always type the four values from the device LCD in **Scan → Enter values manually**.
+Farmers can always type the four soil values (plus temperature and humidity, optional) from the device LCD in **Scan → Enter values manually**.
 The app runs the same analysis offline.

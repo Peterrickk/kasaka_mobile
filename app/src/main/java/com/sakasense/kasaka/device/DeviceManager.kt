@@ -166,7 +166,10 @@ class DeviceManager(private val context: Context) {
             k = base.k + Random.nextInt(-5, 6),
         )
         val crops: List<RankedCrop> = SoilAnalyzer.rankCrops(s)
-        return DevicePayload(s.ph, s.n, s.p, s.k, bat = 88, sn = serial, ts = System.currentTimeMillis() / 1000, crops = crops)
+        // Same ranges as the firmware's demo values (26-30 °C, 45-65 %).
+        val temp = Random.nextInt(260, 300) / 10.0
+        val hum = Random.nextInt(450, 650) / 10.0
+        return DevicePayload(s.ph, s.n, s.p, s.k, temp = temp, hum = hum, bat = 88, sn = serial, ts = System.currentTimeMillis() / 1000, crops = crops)
     }
 
     companion object {

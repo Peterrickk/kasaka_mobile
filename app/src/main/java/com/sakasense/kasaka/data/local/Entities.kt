@@ -75,6 +75,10 @@ data class ReadingEntity(
     /** Potassium, mg/kg */
     val k: Int,
     val source: ReadingSource,
+    /** Temperature, °C (null for readings taken before the device sent it) */
+    val temperatureC: Double? = null,
+    /** Relative humidity, % */
+    val humidityPct: Double? = null,
 )
 
 @Serializable

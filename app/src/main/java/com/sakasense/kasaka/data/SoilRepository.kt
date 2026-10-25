@@ -14,6 +14,7 @@ import com.sakasense.kasaka.data.local.RankedCrop
 import com.sakasense.kasaka.data.local.ReadingEntity
 import com.sakasense.kasaka.data.local.ReadingSource
 import com.sakasense.kasaka.data.local.RecommendationEntity
+import com.sakasense.kasaka.domain.Climate
 import com.sakasense.kasaka.domain.Guidebook
 import com.sakasense.kasaka.domain.SoilAnalysis
 import com.sakasense.kasaka.domain.SoilAnalyzer
@@ -38,6 +39,7 @@ data class PlotSummary(
 }
 
 fun ReadingEntity.toSample() = SoilSample(ph, n, p, k)
+fun ReadingEntity.climate() = Climate(temperatureC, humidityPct)
 
 /** What the field device itself concluded (its on-board model), if it sent that along. */
 data class DeviceVerdict(val rankedCrops: List<RankedCrop>?, val guidebookCode: String?)
@@ -80,6 +82,7 @@ class SoilRepository(private val db: KasakaDatabase) {
         deviceSerial: String? = null,
         deviceBattery: Int? = null,
         verdict: DeviceVerdict? = null,
+        climate: Climate? = null,
         at: Long = System.currentTimeMillis(),
     ): SoilAnalysis = db.withTransaction {
         val plot = requireNotNull(db.plots().get(plotId)) { "Plot $plotId not found" }
@@ -87,7 +90,14 @@ class SoilRepository(private val db: KasakaDatabase) {
         val analysis = SoilAnalyzer.analyze(sample, plot.cropCurrent, farmType)
         val readingId = UUID.randomUUID().toString()
 
-        db.readings().insert(listOf(ReadingEntity(readingId, plotId, deviceSerial, at, sample.ph, sample.n, sample.p, sample.k, source)))
+        db.readings().insert(
+            listOf(
+                ReadingEntity(
+                    readingId, plotId, deviceSerial, at, sample.ph, sample.n, sample.p, sample.k, source,
+                    temperatureC = climate?.temperatureC, humidityPct = climate?.humidityPct,
+                )
+            )
+        )
         db.recommendations().insert(listOf(analysis.toRecommendation(plotId, readingId, at, verdict)))
         db.plots().setStatus(plotId, analysis.status)
 
@@ -171,11 +181,12 @@ class SoilRepository(private val db: KasakaDatabase) {
         val rows = db.readings().allForPlot(plotId)
         return buildString {
             appendLine("# SakaSense / Kasaka soil report — ${plot?.name.orEmpty()} (${plot?.cropCurrent ?: "no crop"})")
-            appendLine("timestamp_iso,ph,nitrogen_mg_kg,phosphorus_mg_kg,potassium_mg_kg,health_index,source,device")
+            appendLine("timestamp_iso,ph,nitrogen_mg_kg,phosphorus_mg_kg,potassium_mg_kg,temperature_c,humidity_pct,health_index,source,device")
             rows.forEach { r ->
                 appendLine(
                     listOf(
                         java.time.Instant.ofEpochMilli(r.timestamp).toString(), r.ph, r.n, r.p, r.k,
+                        r.temperatureC ?: "", r.humidityPct ?: "",
                         SoilAnalyzer.healthIndex(r.toSample()), r.source.name.lowercase(), r.deviceSerial.orEmpty(),
                     ).joinToString(",")
                 )
@@ -184,6 +195,8 @@ class SoilRepository(private val db: KasakaDatabase) {
     }
 
     suspend fun clearAll() = withContext(Dispatchers.IO) { db.clearAllTables() }
+
+    suspend fun backfillDemoClimate() = withContext(Dispatchers.IO) { DemoData.backfillClimate(db) }
 
     suspend fun seedDemo() = withContext(Dispatchers.IO) {
         db.clearAllTables()

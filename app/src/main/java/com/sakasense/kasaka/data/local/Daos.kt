@@ -86,6 +86,12 @@ interface ReadingDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(readings: List<ReadingEntity>)
+
+    @Query("SELECT * FROM readings WHERE temperatureC IS NULL AND humidityPct IS NULL AND source IN (:sources)")
+    suspend fun withoutClimate(sources: List<ReadingSource>): List<ReadingEntity>
+
+    @Query("UPDATE readings SET temperatureC = :temperatureC, humidityPct = :humidityPct WHERE id = :id")
+    suspend fun setClimate(id: String, temperatureC: Double, humidityPct: Double)
 }
 
 @Dao

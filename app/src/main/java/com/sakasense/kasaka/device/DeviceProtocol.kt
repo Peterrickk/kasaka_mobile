@@ -32,6 +32,10 @@ data class DevicePayload(
     val n: Int,
     val p: Int,
     val k: Int,
+    /** Optional: temperature in °C. */
+    val temp: Double? = null,
+    /** Optional: relative humidity in %. */
+    val hum: Double? = null,
     val bat: Int? = null,
     val sn: String? = null,
     val ts: Long? = null,

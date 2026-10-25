@@ -71,10 +71,12 @@ import com.sakasense.kasaka.data.PlotSummary
 import com.sakasense.kasaka.data.SoilRepository
 import com.sakasense.kasaka.data.local.ReadingEntity
 import com.sakasense.kasaka.data.local.RecommendationEntity
+import com.sakasense.kasaka.data.climate
 import com.sakasense.kasaka.data.toSample
 import com.sakasense.kasaka.domain.CropProfiles
 import com.sakasense.kasaka.domain.Nutrient
 import com.sakasense.kasaka.domain.SoilAnalyzer
+import com.sakasense.kasaka.ui.components.ClimateRow
 import com.sakasense.kasaka.ui.components.HealthRing
 import com.sakasense.kasaka.ui.components.IconBadge
 import com.sakasense.kasaka.ui.components.KCard
@@ -209,6 +211,7 @@ fun PlotDetailScreen(plotId: String, onBack: () -> Unit, onScan: (String) -> Uni
                             pair.forEach { NutrientTile(it, Modifier.weight(1f)) }
                         }
                     }
+                    ClimateRow(latest.climate())
                 }
             }
 

@@ -74,7 +74,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sakasense.kasaka.LocalAppContainer
 import com.sakasense.kasaka.data.PlotSummary
 import com.sakasense.kasaka.device.FoundDevice
+import com.sakasense.kasaka.domain.Climate
 import com.sakasense.kasaka.domain.CropProfiles
+import com.sakasense.kasaka.ui.components.ClimateRow
 import com.sakasense.kasaka.ui.components.HealthRing
 import com.sakasense.kasaka.ui.components.IconBadge
 import com.sakasense.kasaka.ui.components.KCard
@@ -225,7 +227,7 @@ private fun ConnectStep(state: ScanState, onScan: () -> Unit, onConnect: (FoundD
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
                 Text("Enter values manually", style = MaterialTheme.typography.titleSmall)
-                Text("Type the pH and N-P-K shown on the device screen", style = MaterialTheme.typography.bodySmall, color = KasakaTheme.colors.muted)
+                Text("Type the values shown on the device screen", style = MaterialTheme.typography.bodySmall, color = KasakaTheme.colors.muted)
             }
         }
     }
@@ -300,15 +302,22 @@ private fun PlotPicker(plots: List<PlotSummary>, selected: String?, onSelect: (S
 }
 
 @Composable
-private fun ManualForm(enabled: Boolean, onSubmit: (Double, Int, Int, Int) -> Unit) {
+private fun ManualForm(enabled: Boolean, onSubmit: (Double, Int, Int, Int, Climate) -> Unit) {
     var ph by rememberSaveable { mutableStateOf("") }
     var n by rememberSaveable { mutableStateOf("") }
     var p by rememberSaveable { mutableStateOf("") }
     var k by rememberSaveable { mutableStateOf("") }
+    var temp by rememberSaveable { mutableStateOf("") }
+    var hum by rememberSaveable { mutableStateOf("") }
     val phV = ph.replace(',', '.').toDoubleOrNull()
     val nV = n.toIntOrNull(); val pV = p.toIntOrNull(); val kV = k.toIntOrNull()
     val phOk = phV != null && phV in 3.0..10.0
-    val valid = phOk && nV != null && pV != null && kV != null && listOf(nV, pV, kV).all { it in 0..2000 }
+    // Temperature and humidity are optional; when typed they must be plausible.
+    val tempV = temp.replace(',', '.').toDoubleOrNull()
+    val humV = hum.replace(',', '.').toDoubleOrNull()
+    val tempOk = temp.isEmpty() || (tempV != null && tempV in -10.0..70.0)
+    val humOk = hum.isEmpty() || (humV != null && humV in 0.0..100.0)
+    val valid = phOk && tempOk && humOk && nV != null && pV != null && kV != null && listOf(nV, pV, kV).all { it in 0..2000 }
 
     KCard(Modifier.fillMaxWidth()) {
         Text("Values from the device screen", style = MaterialTheme.typography.titleSmall)
@@ -322,9 +331,14 @@ private fun ManualForm(enabled: Boolean, onSubmit: (Double, Int, Int, Int) -> Un
             NumberField(p, { p = it }, "P", "mg/kg", Modifier.weight(1f))
             NumberField(k, { k = it }, "K", "mg/kg", Modifier.weight(1f))
         }
+        Spacer(Modifier.height(10.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            NumberField(temp, { temp = it }, "Temperature", "°C · optional", Modifier.weight(1f), decimal = true, isError = !tempOk)
+            NumberField(hum, { hum = it }, "Humidity", "% · optional", Modifier.weight(1f), decimal = true, isError = !humOk)
+        }
     }
     Button(
-        onClick = { onSubmit(phV!!, nV!!, pV!!, kV!!) },
+        onClick = { onSubmit(phV!!, nV!!, pV!!, kV!!, Climate(tempV, humV)) },
         enabled = enabled && valid,
         modifier = Modifier.fillMaxWidth().height(56.dp),
     ) { Text("Analyze soil") }
@@ -352,7 +366,7 @@ private fun MeasuringStep(progress: Float) {
             Text("${(progress * 100).toInt()}%", style = MaterialTheme.typography.headlineMedium)
         }
         Spacer(Modifier.height(28.dp))
-        Text("Reading pH and N-P-K", style = MaterialTheme.typography.titleLarge)
+        Text("Reading soil and air", style = MaterialTheme.typography.titleLarge)
         Spacer(Modifier.height(6.dp))
         Text(
             "Keep the probe in the soil and the device still.",
@@ -383,6 +397,7 @@ private fun ResultStep(state: ScanState, onOpenPlot: (String) -> Unit, onOpenGui
         a.bands.chunked(2).forEach { pair ->
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) { pair.forEach { NutrientTile(it, Modifier.weight(1f)) } }
         }
+        ClimateRow(state.ui.climate)
     }
     state.ui.recommendation?.let { RecommendationCard(it, onOpenGuide) }
     Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {

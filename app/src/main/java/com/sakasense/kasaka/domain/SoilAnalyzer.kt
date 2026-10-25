@@ -10,6 +10,11 @@ import kotlin.math.roundToInt
 
 data class SoilSample(val ph: Double, val n: Int, val p: Int, val k: Int)
 
+/** Temperature (°C) and relative humidity (%) sent with a reading. Shown to the farmer; not used in the analysis. */
+data class Climate(val temperatureC: Double?, val humidityPct: Double?) {
+    val isEmpty: Boolean get() = temperatureC == null && humidityPct == null
+}
+
 enum class Level { LOW, FAIR, GOOD, HIGH }
 
 enum class Nutrient(val label: String, val short: String, val unit: String) {

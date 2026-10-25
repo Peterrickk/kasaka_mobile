@@ -11,6 +11,7 @@ import com.sakasense.kasaka.data.local.RecommendationEntity
 import com.sakasense.kasaka.data.toRecommendation
 import com.sakasense.kasaka.device.ConnectedDevice
 import com.sakasense.kasaka.device.FoundDevice
+import com.sakasense.kasaka.domain.Climate
 import com.sakasense.kasaka.domain.SoilAnalysis
 import com.sakasense.kasaka.domain.SoilSample
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,6 +34,7 @@ data class ScanUi(
     val error: String? = null,
     val selectedPlotId: String? = null,
     val analysis: SoilAnalysis? = null,
+    val climate: Climate? = null,
     val recommendation: RecommendationEntity? = null,
     val savedPlotId: String? = null,
 )
@@ -85,28 +87,31 @@ class ScanViewModel(private val c: AppContainer, presetPlotId: String?) : ViewMo
                 val payload = c.devices.measure(viewModelScope) { p -> ui.update { it.copy(progress = p) } }
                 val serial = payload.sn ?: ui.value.connected?.serial
                 val source = if (ui.value.connected?.device?.simulated == true) ReadingSource.DEMO else ReadingSource.BLUETOOTH
-                save(plotId, SoilSample(payload.ph, payload.n, payload.p, payload.k), source, serial, payload.bat, DeviceVerdict(payload.crops, payload.gb))
+                save(
+                    plotId, SoilSample(payload.ph, payload.n, payload.p, payload.k), Climate(payload.temp, payload.hum),
+                    source, serial, payload.bat, DeviceVerdict(payload.crops, payload.gb),
+                )
             }.onFailure { e ->
                 ui.update { it.copy(step = ScanStep.READY, error = e.message ?: "Measurement failed") }
             }
         }
     }
 
-    fun submitManual(ph: Double, n: Int, p: Int, k: Int) {
+    fun submitManual(ph: Double, n: Int, p: Int, k: Int, climate: Climate) {
         val plotId = ui.value.selectedPlotId ?: return ui.update { it.copy(error = "Choose which plot you are measuring first.") }
         viewModelScope.launch {
-            runCatching { save(plotId, SoilSample(ph, n, p, k), ReadingSource.MANUAL, null, null, null) }
+            runCatching { save(plotId, SoilSample(ph, n, p, k), climate, ReadingSource.MANUAL, null, null, null) }
                 .onFailure { e -> ui.update { it.copy(error = e.message) } }
         }
     }
 
-    private suspend fun save(plotId: String, sample: SoilSample, source: ReadingSource, serial: String?, battery: Int?, verdict: DeviceVerdict?) {
-        val analysis = c.soil.saveReading(plotId, sample, source, serial, battery, verdict)
+    private suspend fun save(plotId: String, sample: SoilSample, climate: Climate, source: ReadingSource, serial: String?, battery: Int?, verdict: DeviceVerdict?) {
+        val analysis = c.soil.saveReading(plotId, sample, source, serial, battery, verdict, climate)
         val rec = analysis.toRecommendation(plotId, null, System.currentTimeMillis(), verdict)
-        ui.update { it.copy(step = ScanStep.RESULT, analysis = analysis, recommendation = rec, savedPlotId = plotId, progress = 1f) }
+        ui.update { it.copy(step = ScanStep.RESULT, analysis = analysis, climate = climate, recommendation = rec, savedPlotId = plotId, progress = 1f) }
     }
 
-    fun measureAgain() = ui.update { it.copy(step = ScanStep.READY, analysis = null, recommendation = null, error = null) }
+    fun measureAgain() = ui.update { it.copy(step = ScanStep.READY, analysis = null, climate = null, recommendation = null, error = null) }
 
     fun disconnect() {
         c.devices.disconnect()

@@ -19,6 +19,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Thermostat
+import androidx.compose.material.icons.rounded.WaterDrop
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -40,6 +43,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sakasense.kasaka.R
+import com.sakasense.kasaka.domain.Climate
 import com.sakasense.kasaka.data.local.PlotStatus
 import com.sakasense.kasaka.domain.Level
 import com.sakasense.kasaka.domain.Nutrient
@@ -204,6 +208,35 @@ fun NutrientTile(band: NutrientBand, modifier: Modifier = Modifier) {
         Row {
             Text(band.label, style = MaterialTheme.typography.labelMedium, color = lvl, modifier = Modifier.weight(1f))
             Text(band.target, style = MaterialTheme.typography.labelSmall, color = KasakaTheme.colors.muted)
+        }
+    }
+}
+
+/** Temperature and humidity side by side. Shows nothing when the reading has neither. */
+@Composable
+fun ClimateRow(climate: Climate?, modifier: Modifier = Modifier) {
+    if (climate == null || climate.isEmpty) return
+    Row(modifier, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+        ClimateTile(Icons.Rounded.Thermostat, "Temperature", climate.temperatureC, "°C", KasakaTheme.colors.attention, Modifier.weight(1f))
+        ClimateTile(Icons.Rounded.WaterDrop, "Humidity", climate.humidityPct, "%", KasakaTheme.colors.info, Modifier.weight(1f))
+    }
+}
+
+@Composable
+private fun ClimateTile(icon: ImageVector, label: String, value: Double?, unit: String, accent: Color, modifier: Modifier) {
+    KCard(modifier, contentPadding = 14.dp) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            IconBadge(icon, accent, size = 28.dp)
+            Spacer(Modifier.width(8.dp))
+            Text(label, style = MaterialTheme.typography.labelMedium, color = KasakaTheme.colors.muted, maxLines = 1)
+        }
+        Spacer(Modifier.height(10.dp))
+        Row(verticalAlignment = Alignment.Bottom) {
+            Text(value?.let { "%.1f".format(java.util.Locale.US, it) } ?: "—", style = ReadingStyle.copy(fontSize = 26.sp))
+            if (value != null) {
+                Spacer(Modifier.width(4.dp))
+                Text(unit, style = MaterialTheme.typography.labelSmall, color = KasakaTheme.colors.muted, modifier = Modifier.padding(bottom = 4.dp))
+            }
         }
     }
 }
