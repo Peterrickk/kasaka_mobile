@@ -1,8 +1,11 @@
 package com.sakasense.kasaka.ui.plots
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -47,11 +50,18 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.times
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sakasense.kasaka.LocalAppContainer
+import com.sakasense.kasaka.R
 import com.sakasense.kasaka.data.PlotSummary
 import com.sakasense.kasaka.domain.CropProfiles
 import com.sakasense.kasaka.ui.components.EmptyState
@@ -187,34 +197,69 @@ fun PlotsScreen(onOpenPlot: (String) -> Unit) {
  */
 @Composable
 private fun FarmLayout(plots: List<PlotSummary>, onOpen: (String) -> Unit) {
+    val context = LocalContext.current
     val rows = plots.maxOf { it.plot.layoutRow + it.plot.rowSpan - 1 }
     val gap = 8.dp
     KCard(Modifier.fillMaxWidth(), contentPadding = 10.dp, container = KasakaTheme.colors.soil.copy(alpha = 0.10f)) {
         BoxWithConstraints(Modifier.fillMaxWidth().height(rows * 84.dp + (rows - 1) * gap)) {
             val cell = (maxWidth - gap * 2) / 3
             val rowH = 84.dp
+
             plots.forEach { s ->
                 val p = s.plot
                 val color = statusColor(p.status)
+                val img = cropImageRes(context, p.cropCurrent)
                 Surface(
                     onClick = { onOpen(p.id) },
                     modifier = Modifier
                         .offset(x = (cell + gap) * (p.layoutCol - 1), y = (rowH + gap) * (p.layoutRow - 1))
                         .size(width = cell * p.colSpan + gap * (p.colSpan - 1), height = rowH * p.rowSpan + gap * (p.rowSpan - 1)),
                     shape = MaterialTheme.shapes.medium,
-                    color = color.copy(alpha = 0.16f),
+                    color = color.copy(alpha = 0.30f),
                     border = BorderStroke(1.5.dp, color.copy(alpha = 0.7f)),
                 ) {
-                    Column(Modifier.padding(10.dp)) {
-                        Text(CropProfiles.emoji(p.cropCurrent))
-                        Spacer(Modifier.weight(1f))
-                        Text(p.name, style = MaterialTheme.typography.labelMedium, maxLines = 2, overflow = TextOverflow.Ellipsis)
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(s.healthIndex?.toString() ?: "—", style = ReadingStyle, color = color)
+                    Box(Modifier.fillMaxSize()) {
+                        if (img != 0) {
+                            // Picture of the crop planted in this plot, with a dark fade so the text stays readable.
+                            Image(
+                                painter = painterResource(img),
+                                contentDescription = p.cropCurrent,
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier.matchParentSize(),
+                            )
+                            Box(
+                                Modifier.matchParentSize().background(
+                                    Brush.verticalGradient(listOf(color.copy(alpha = 0.20f), Color.Black.copy(alpha = 0.70f))),
+                                ),
+                            )
+                        }
+                        Column(Modifier.fillMaxSize().padding(10.dp)) {
+                            if (img == 0) Text(CropProfiles.emoji(p.cropCurrent))
+                            Spacer(Modifier.weight(1f))
+                            Text(
+                                p.name,
+                                style = MaterialTheme.typography.labelMedium,
+                                color = if (img != 0) Color.White else Color.Unspecified,
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(s.healthIndex?.toString() ?: "—", style = ReadingStyle, color = if (img != 0) Color.White else color)
+                            }
                         }
                     }
                 }
             }
         }
     }
+}
+
+/**
+ * Finds the picture for a crop: drawable "crop_<name>" (e.g. crop_tomato, crop_sweet_potato).
+ * Returns 0 when that picture hasn't been added yet, and the plot falls back to the emoji.
+ */
+private fun cropImageRes(context: android.content.Context, crop: String?): Int {
+    if (crop.isNullOrBlank()) return 0
+    val name = "crop_" + crop.trim().lowercase().replace(" ", "_")
+    return context.resources.getIdentifier(name, "drawable", context.packageName)
 }
