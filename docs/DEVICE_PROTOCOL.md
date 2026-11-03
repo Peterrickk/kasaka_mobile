@@ -27,7 +27,10 @@ The Reading characteristic must have the standard CCCD descriptor (`0x2902`) so 
 1. App connects, requests an MTU of **247**, and discovers services.
 2. App enables notifications on **Reading**.
 3. App reads **Info** (optional): `{"sn":"KS-ESP32-004821","fw":"2.1.0","bat":86}`
-4. When the farmer taps **Measure soil**, the app writes the ASCII string `MEASURE` to **Command**.
+4. When the farmer taps **Measure**, the app first writes `CROP:<crop>` to **Command** with the
+   plot's Kasaka Guidebook crop (e.g. `CROP:Sweet potato`), or `CROP:` when the plot has no book crop.
+   Firmware 2.x then works out the code for that crop; firmware 1.x ignores the command.
+   Then the app writes the ASCII string `MEASURE` to **Command**.
 5. The device takes a reading (the app waits up to 45 s) and sends one JSON object as a
    notification on **Reading**.
 
@@ -35,7 +38,7 @@ The Reading characteristic must have the standard CCCD descriptor (`0x2902`) so 
 
 ```json
 {"ph":6.21,"n":48,"p":40,"k":58,"temp":28.4,"hum":57.2,"bat":86,"sn":"KS-ESP32-004822","ts":1730000000,
- "crops":[{"crop":"Tomato","score":74},{"crop":"Sweet potato","score":68}],"gb":"3902"}
+ "crops":[{"crop":"Okra","score":93},{"crop":"Corn","score":88}],"gb":"6","gbCrop":"Okra"}
 ```
 
 | Field | Type | Required | Meaning |
@@ -48,7 +51,8 @@ The Reading characteristic must have the standard CCCD descriptor (`0x2902`) so 
 | `sn` | string | no | Serial number (falls back to Info `sn`) |
 | `ts` | integer | no | Unix time (seconds) of the reading |
 | `crops` | array | no | The device's own crop ranking. If present, the app shows it instead of its own |
-| `gb` | string | no | Guidebook code shown on the device LCD. Must exist in the app's Guidebook to be used |
+| `gb` | string | no | Kasaka Guidebook code (`"1"`–`"7"`) shown on the device LCD |
+| `gbCrop` | string | no | The crop `gb` was worked out for. The app keeps `gb` only when this is the crop it analysed; otherwise (including the old 4-digit codes of firmware 1.x) it uses its own code |
 
 - Unknown fields are ignored, so the firmware can add fields without breaking older apps.
 - With MTU 247, keep the JSON under ~240 bytes. If it is longer, split it across several

@@ -12,11 +12,11 @@ and get a soil health score, the best crops for the plot and a fertilizer prescr
 |---|---|
 | **Scan** | Pair with the SakaSense device over Bluetooth LE, measure, and save to a plot. Includes a simulated demo device and manual entry of values from the device LCD. |
 | **Soil health score** | The same 0–100 index as the web dashboard, so a reading scores the same everywhere. |
-| **SakaSense AI (on-phone)** | Ranks the best crops, writes a fertilizer prescription (per hectare, or per pot for container farms), and links the matching Guidebook page. |
+| **SakaSense AI (on-phone)** | Follows the Kasaka Guidebook (`docs/guidebook/`): sorts each reading into the book's LOW / SLIGHTLY LOW / GOOD / HIGH boxes, gives the 1–7 code and the crop's Fix-it dose (per bed, for the whole plot, or per m² for containers), and ranks the best crops. Crops from earlier versions that the book has no chapter for (tomato, rice, potato, cassava, chili, lettuce, basil) still work, with the book's general amounts. |
 | **Farms & plots** | Multiple farms, a farm layout map coloured by plot status, and per-plot history. |
 | **Trends** | pH / N / P / K charts over 7, 14 or 30 days, with the target zone shaded. |
 | **Alerts** | Deficiencies, offline devices and overdue check-ins. |
-| **Guidebook** | Searchable by device code (e.g. `4821`) or crop. |
+| **Guidebook** | The Kasaka Guidebook on the phone: crop chapters (growing, reading table, fertilizer plan, Fix-it codes) for kangkong, pechay, sweet potato and okra, plus the soil-care pages. Search by code 1–7. |
 | **Reports** | Share a plot's readings as CSV (to Sheets, Excel, email or Messenger). |
 | **Offline-first** | Everything is stored on the phone (Room database). |
 | **Light & dark themes** | Brand colours and fonts from sakasense.com. Light mode is easier to read in sunlight. |
@@ -81,9 +81,11 @@ The debug build installs as `com.sakasense.kasaka.debug`, so it can sit next to 
 
 ## Device protocol
 
-The BLE contract the firmware must implement (UUIDs, `MEASURE` command, JSON payload) is in
-[`docs/DEVICE_PROTOCOL.md`](docs/DEVICE_PROTOCOL.md). Until the firmware matches, use the **demo
-device** or **manual entry**.
+The BLE contract (UUIDs, `CROP:` and `MEASURE` commands, JSON payload) is in
+[`docs/DEVICE_PROTOCOL.md`](docs/DEVICE_PROTOCOL.md). The ESP32 firmware that implements it is in
+[`kasaka_device/`](kasaka_device/) (`kasaka_device.ino`; `probe_scan/` finds the probe's registers).
+Firmware 2.x judges readings with the same Kasaka Guidebook rules as the app. Without hardware, use
+the **demo device** or **manual entry**.
 
 ## Roadmap
 
@@ -92,7 +94,7 @@ device** or **manual entry**.
 - Push notifications for alerts
 - Filipino and Waray translations (move UI strings into `strings.xml`)
 - Wi-Fi provisioning of the device from the app
-- Agronomist review of crop targets in `domain/CropProfiles.kt` and Guidebook text
+- Agronomist review of the Kasaka Guidebook; `domain/CropProfiles.kt` and `domain/Guidebook.kt` copy it, so change the book first
 
 ---
 

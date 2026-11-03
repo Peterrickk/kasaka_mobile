@@ -53,6 +53,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -74,8 +75,12 @@ import com.sakasense.kasaka.data.local.RecommendationEntity
 import com.sakasense.kasaka.data.climate
 import com.sakasense.kasaka.data.toSample
 import com.sakasense.kasaka.domain.CropProfiles
+import com.sakasense.kasaka.domain.Guidebook
 import com.sakasense.kasaka.domain.Nutrient
 import com.sakasense.kasaka.domain.SoilAnalyzer
+import com.sakasense.kasaka.domain.SoilCondition
+import com.sakasense.kasaka.ui.guidebook.CodeBadge
+import com.sakasense.kasaka.ui.guidebook.OpenGuide
 import com.sakasense.kasaka.ui.components.ClimateRow
 import com.sakasense.kasaka.ui.components.HealthRing
 import com.sakasense.kasaka.ui.components.IconBadge
@@ -135,7 +140,7 @@ class PlotDetailViewModel(private val plotId: String, private val repo: SoilRepo
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PlotDetailScreen(plotId: String, onBack: () -> Unit, onScan: (String) -> Unit, onOpenGuide: (String) -> Unit) {
+fun PlotDetailScreen(plotId: String, onBack: () -> Unit, onScan: (String) -> Unit, onOpenGuide: OpenGuide) {
     val repo = LocalAppContainer.current.soil
     val vm: PlotDetailViewModel = viewModel { PlotDetailViewModel(plotId, repo) }
     val state by vm.state.collectAsStateWithLifecycle()
@@ -180,7 +185,8 @@ fun PlotDetailScreen(plotId: String, onBack: () -> Unit, onScan: (String) -> Uni
             if (state.loaded) Text("This plot no longer exists.", Modifier.padding(padding).padding(24.dp))
             return@Scaffold
         }
-        val crop = CropProfiles.find(s.plot.cropCurrent)
+        // The book crop the advice is for: the plot's crop, or the best match when the book doesn't cover it.
+        val crop = s.latest?.let { SoilAnalyzer.cropFor(it.toSample(), s.plot.cropCurrent) } ?: CropProfiles.find(s.plot.cropCurrent)
         LazyColumn(
             Modifier.fillMaxSize().padding(padding),
             contentPadding = PaddingValues(start = 20.dp, end = 20.dp, bottom = 24.dp),
@@ -204,7 +210,7 @@ fun PlotDetailScreen(plotId: String, onBack: () -> Unit, onScan: (String) -> Uni
 
             item { SectionHeader("Latest reading") }
             item {
-                val bands = SoilAnalyzer.bands(latest.toSample(), crop)
+                val bands = SoilAnalyzer.bands(latest.toSample(), crop ?: SoilAnalyzer.cropFor(latest.toSample(), null))
                 Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     bands.chunked(2).forEach { pair ->
                         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -247,9 +253,11 @@ fun PlotDetailScreen(plotId: String, onBack: () -> Unit, onScan: (String) -> Uni
             if (older.isNotEmpty()) {
                 item { SectionHeader("Recommendation history") }
                 items(older, key = { it.id }) { rec ->
-                    KCard(Modifier.fillMaxWidth(), onClick = { onOpenGuide(rec.guidebookCode) }, contentPadding = 14.dp) {
+                    KCard(Modifier.fillMaxWidth(), onClick = { onOpenGuide(rec.crop, rec.guidebookCode) }, contentPadding = 14.dp) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(formatShortDate(rec.timestamp), style = MaterialTheme.typography.labelMedium, color = KasakaTheme.colors.muted, modifier = Modifier.width(56.dp))
+                            CodeBadge(rec.guidebookCode, small = true)
+                            Spacer(Modifier.width(10.dp))
                             Text(rec.insight, style = MaterialTheme.typography.bodySmall, modifier = Modifier.weight(1f), maxLines = 2, overflow = TextOverflow.Ellipsis)
                             Spacer(Modifier.width(8.dp))
                             Text("${rec.healthIndex}", style = ReadingStyle)
@@ -325,12 +333,8 @@ private fun TrendsCard(state: PlotDetailState, crop: com.sakasense.kasaka.domain
             Nutrient.K -> it.k.toDouble()
         }
     }
-    val target = when (m) {
-        Nutrient.PH -> (crop?.phMin ?: 6.0)..(crop?.phMax ?: 7.0)
-        Nutrient.N -> (crop?.nTarget ?: 80).let { it.toDouble()..it * 1.6 }
-        Nutrient.P -> (crop?.pTarget ?: 50).let { it.toDouble()..it * 1.6 }
-        Nutrient.K -> (crop?.kTarget ?: 80).let { it.toDouble()..it * 1.6 }
-    }
+    // The crop's ✓ GOOD box (or "most vegetables" pH when no crop is known).
+    val target = crop?.row(m)?.let { it.goodFrom..it.goodTo } ?: if (m == Nutrient.PH) 5.5..7.0 else 0.0..0.0
     val fmt: (Double) -> String = if (m == Nutrient.PH) ::formatPh else { v -> v.toInt().toString() }
 
     KCard(Modifier.fillMaxWidth()) {
@@ -367,7 +371,7 @@ private fun TrendsCard(state: PlotDetailState, crop: com.sakasense.kasaka.domain
             Box(Modifier.size(10.dp).clip(RoundedCornerShape(3.dp)).background(KasakaTheme.colors.healthy.copy(alpha = 0.25f)))
             Spacer(Modifier.width(6.dp))
             Text(
-                "Target zone for ${crop?.name ?: "general crops"}" + if (values.isNotEmpty()) " · avg ${fmt(values.average())}" else "",
+                "✓ GOOD zone for ${crop?.name ?: "most vegetables"}" + if (values.isNotEmpty()) " · avg ${fmt(values.average())}" else "",
                 style = MaterialTheme.typography.labelSmall, color = KasakaTheme.colors.muted,
             )
         }
@@ -375,63 +379,76 @@ private fun TrendsCard(state: PlotDetailState, crop: com.sakasense.kasaka.domain
 }
 
 @Composable
-fun RecommendationCard(rec: RecommendationEntity, onOpenGuide: (String) -> Unit) {
+fun RecommendationCard(rec: RecommendationEntity, onOpenGuide: OpenGuide) {
+    var details by rememberSaveable(rec.id) { mutableStateOf(false) }
     KCard(Modifier.fillMaxWidth()) {
+        // What a farmer needs first: the code, then what to buy, how much and when.
+        val c = SoilCondition.fromCode(rec.guidebookCode)
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text("SakaSense AI", style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
+            CodeBadge(rec.guidebookCode)
+            Spacer(Modifier.width(12.dp))
+            Column(Modifier.weight(1f)) {
+                Text(
+                    (if (c != null) "Code ${c.code}" else "Guidebook") + (rec.crop?.let { " · $it" } ?: ""),
+                    style = MaterialTheme.typography.labelMedium, color = KasakaTheme.colors.muted,
+                )
+                Text(c?.title ?: "See the Code finder", style = MaterialTheme.typography.titleLarge)
+            }
             Pill(if (rec.generatedOnDevice) "On device" else "In app", MaterialTheme.colorScheme.primary, dot = false)
         }
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(10.dp))
         Text(rec.insight, style = MaterialTheme.typography.bodyLarge)
 
         Spacer(Modifier.height(16.dp))
-        Text("Best crops for this soil", style = MaterialTheme.typography.labelLarge, color = KasakaTheme.colors.muted)
-        Spacer(Modifier.height(8.dp))
-        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            rec.rankedCrops.forEachIndexed { i, c ->
-                ScoreBar(c.crop, c.score, leading = CropProfiles.emoji(c.crop), highlight = i == 0)
+        Column(
+            Modifier.fillMaxWidth().clip(MaterialTheme.shapes.small).background(KasakaTheme.colors.attention.copy(alpha = 0.10f)).padding(14.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                IconBadge(Icons.Rounded.Science, KasakaTheme.colors.attention)
+                Spacer(Modifier.width(12.dp))
+                Column {
+                    Text("What to do now", style = MaterialTheme.typography.labelMedium, color = KasakaTheme.colors.muted)
+                    Text(rec.fertilizerProduct, style = MaterialTheme.typography.titleMedium)
+                }
             }
+            Step("How much", rec.fertilizerAmount)
+            Step("When", rec.fertilizerTiming)
+        }
+
+        TextButton(onClick = { details = !details }) { Text(if (details) "Hide the full instructions" else "Show the full instructions") }
+        if (details) {
+            Text(rec.fertilizerNotes, style = MaterialTheme.typography.bodyMedium)
+            Spacer(Modifier.height(8.dp))
+        }
+
+        Button(onClick = { onOpenGuide(rec.crop, rec.guidebookCode) }, modifier = Modifier.fillMaxWidth().height(50.dp)) {
+            Icon(Icons.AutoMirrored.Rounded.MenuBook, null)
+            Spacer(Modifier.width(8.dp))
+            Text(
+                if (Guidebook.isCode(rec.guidebookCode) && Guidebook.crop(rec.crop) != null) "Open ${rec.crop} Fix-it page"
+                else "Open the Code finder"
+            )
         }
 
         Spacer(Modifier.height(16.dp))
         HorizontalDivider(color = KasakaTheme.colors.border)
         Spacer(Modifier.height(16.dp))
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            IconBadge(Icons.Rounded.Science, KasakaTheme.colors.attention)
-            Spacer(Modifier.width(12.dp))
-            Column {
-                Text("Fertilizer prescription", style = MaterialTheme.typography.labelMedium, color = KasakaTheme.colors.muted)
-                Text(rec.fertilizerProduct, style = MaterialTheme.typography.titleMedium)
+        Text("Best crops for this soil", style = MaterialTheme.typography.labelLarge, color = KasakaTheme.colors.muted)
+        Spacer(Modifier.height(8.dp))
+        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            rec.rankedCrops.forEachIndexed { i, rc ->
+                ScoreBar(rc.crop, rc.score, leading = CropProfiles.emoji(rc.crop), highlight = i == 0)
             }
-        }
-        Spacer(Modifier.height(12.dp))
-        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            Fact("Amount", rec.fertilizerAmount, Modifier.weight(1f))
-            Fact("When", rec.fertilizerTiming, Modifier.weight(1f))
-        }
-        Spacer(Modifier.height(10.dp))
-        Text(rec.fertilizerNotes, style = MaterialTheme.typography.bodyMedium, color = KasakaTheme.colors.muted)
-
-        Spacer(Modifier.height(16.dp))
-        OutlinedButton(onClick = { onOpenGuide(rec.guidebookCode) }, modifier = Modifier.fillMaxWidth()) {
-            Icon(Icons.AutoMirrored.Rounded.MenuBook, null)
-            Spacer(Modifier.width(8.dp))
-            Text("Open Guidebook ${rec.guidebookCode}")
         }
     }
 }
 
 @Composable
-private fun Fact(label: String, value: String, modifier: Modifier = Modifier) {
-    Column(
-        modifier
-            .clip(MaterialTheme.shapes.small)
-            .background(KasakaTheme.colors.surface2)
-            .padding(12.dp)
-    ) {
-        Text(label, style = MaterialTheme.typography.labelSmall, color = KasakaTheme.colors.muted)
-        Spacer(Modifier.height(2.dp))
-        Text(value, style = MaterialTheme.typography.bodyMedium)
+private fun Step(label: String, value: String) {
+    Column {
+        Text(label, style = MaterialTheme.typography.labelMedium, color = KasakaTheme.colors.muted)
+        Text(value, style = MaterialTheme.typography.bodyLarge)
     }
 }
 

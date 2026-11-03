@@ -12,6 +12,7 @@ import android.os.Build
 import android.os.ParcelUuid
 import androidx.core.content.ContextCompat
 import com.sakasense.kasaka.data.local.RankedCrop
+import com.sakasense.kasaka.domain.CropProfiles
 import com.sakasense.kasaka.domain.SoilAnalyzer
 import com.sakasense.kasaka.domain.SoilSample
 import kotlinx.coroutines.CoroutineScope
@@ -121,7 +122,7 @@ class DeviceManager(private val context: Context) {
      * Takes one measurement. [onProgress] gets 0..1 — real devices don't report progress, so it is
      * an estimate that stops at 95 % until the result arrives.
      */
-    suspend fun measure(scope: CoroutineScope, onProgress: (Float) -> Unit): DevicePayload {
+    suspend fun measure(scope: CoroutineScope, crop: String?, onProgress: (Float) -> Unit): DevicePayload {
         val device = connected ?: throw IOException("No device connected")
         val ticker = scope.launch {
             var p = 0f
@@ -134,9 +135,9 @@ class DeviceManager(private val context: Context) {
         try {
             val payload = if (device.device.simulated) {
                 delay(3_500)
-                simulatedPayload(device.serial)
+                simulatedPayload(device.serial, crop)
             } else {
-                (ble ?: throw IOException("Device disconnected")).measure()
+                (ble ?: throw IOException("Device disconnected")).measure(crop)
             }
             onProgress(1f)
             return payload
@@ -151,7 +152,8 @@ class DeviceManager(private val context: Context) {
         connected = null
     }
 
-    private fun simulatedPayload(serial: String): DevicePayload {
+    /** Behaves like firmware 2.x: ranks the book crops and gives the code for [crop] (or the best crop). */
+    private fun simulatedPayload(serial: String, crop: String?): DevicePayload {
         // Picks one of a few realistic soil profiles so repeated demo readings vary.
         val base = listOf(
             SoilSample(6.3, 62, 44, 74),
@@ -165,11 +167,15 @@ class DeviceManager(private val context: Context) {
             p = base.p + Random.nextInt(-3, 4),
             k = base.k + Random.nextInt(-5, 6),
         )
-        val crops: List<RankedCrop> = SoilAnalyzer.rankCrops(s)
+        val crops: List<RankedCrop> = SoilAnalyzer.rankCrops(s, books = true)
+        val target = CropProfiles.find(crop)?.takeIf { it.inGuidebook } ?: CropProfiles.find(crops.first().crop)!!
         // Same ranges as the firmware's demo values (26-30 °C, 45-65 %).
         val temp = Random.nextInt(260, 300) / 10.0
         val hum = Random.nextInt(450, 650) / 10.0
-        return DevicePayload(s.ph, s.n, s.p, s.k, temp = temp, hum = hum, bat = 88, sn = serial, ts = System.currentTimeMillis() / 1000, crops = crops)
+        return DevicePayload(
+            s.ph, s.n, s.p, s.k, temp = temp, hum = hum, bat = 88, sn = serial, ts = System.currentTimeMillis() / 1000,
+            crops = crops, gb = SoilAnalyzer.condition(s, target).code.toString(), gbCrop = target.name,
+        )
     }
 
     companion object {

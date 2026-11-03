@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>SakaSense Farmer Guidebook</title>
+<title>Kasaka Guidebook</title>
 <style>
 @font-face { font-family: "Inter"; src: url("../../app/src/main/res/font/inter.ttf"); font-weight: 100 900; }
 @font-face { font-family: "Space Grotesk"; src: url("../../app/src/main/res/font/space_grotesk.ttf"); font-weight: 300 700; }
@@ -12,174 +12,219 @@
 
 :root {
   --ink: #1b2620;
-  --muted: #55695e;
-  --line: #d5ddd7;
+  --muted: #4f6256;
+  --line: #d9e2da;
   --paper: #ffffff;
-  --tint: #f1f6f2;
-  --brand: #2f5d3a;
-  --brand-2: #6f9a4f;
-  --brand-dark: #1d3a25;
+  --tint: #eef6ef;
+  --cream: #fbf7ec;
+  --brand: #2f6b3c;
+  --brand-2: #7fae4f;
+  --brand-dark: #1a3d26;
+  --sun: #f2b632;
 
-  /* reading bands - always printed with a word and a symbol, never colour alone */
   --low: #c62828;   --low-bg: #fdeaea;
-  --fair: #9a6a00;  --fair-bg: #fff4d6;
-  --good: #1f7a3c;  --good-bg: #e3f3e7;
-  --high: #1f5f99;  --high-bg: #e4eef8;
+  --fair: #a86b00;  --fair-bg: #fff2cf;
+  --good: #1f7a3c;  --good-bg: #e2f3e6;
+  --high: #1f5f99;  --high-bg: #e3eef9;
 
-  /* crop accents */
   --kangkong: #1b7a57;
   --pechay: #5f8f1c;
   --kamote: #873c6c;
   --okra: #a8620e;
+  --eggplant: #4b3f8f;
+  --ampalaya: #1f7a8c;
+  --corn: #a87a00;
 
-  /* sequential ramp for the BSWM area charts (light = poorest class) */
+  /* fix-it code colours (always shown with the number and a word) */
+  --c1: #1f7a3c; --c2: #c2570c; --c3: #1f5f99; --c4: #0f766e; --c5: #6d3fc0; --c6: #8a5a12; --c7: #b4234e;
+
   --q1: #e2efdc; --q2: #a9d39a; --q3: #5fa85a; --q4: #2b6e35;
 }
 
 * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 html, body { margin: 0; padding: 0; background: #8a948e; }
-body { font-family: "Inter", sans-serif; color: var(--ink); font-size: 8.6pt; line-height: 1.42; }
+body { font-family: "Inter", sans-serif; color: var(--ink); font-size: 9.2pt; line-height: 1.43; }
 
 .page {
   width: 148mm; height: 210mm; background: var(--paper);
   position: relative; overflow: hidden;
-  padding: 12mm 11mm 15mm 11mm;
+  padding: 11mm 11mm 16mm 11mm;
   page-break-after: always; break-after: page;
   margin: 0 auto;
 }
 @media screen { .page { margin: 8mm auto; box-shadow: 0 2px 10px rgba(0,0,0,.25); } }
 
+/* running head: coloured label on the left, book name on the right */
 .run { display: flex; justify-content: space-between; align-items: center;
   font-family: "Space Grotesk"; font-size: 7pt; letter-spacing: .08em; text-transform: uppercase;
-  color: var(--muted); border-bottom: 0.6pt solid var(--line); padding-bottom: 1.6mm; margin-bottom: 4mm; }
-.run b { color: var(--accent, var(--brand)); font-weight: 700; }
-.folio { position: absolute; bottom: 7mm; left: 11mm; right: 11mm; display: flex; justify-content: space-between;
+  color: var(--muted); margin-bottom: 4.5mm; }
+.run b { background: var(--accent, var(--brand)); color: #fff; font-weight: 700; padding: .9mm 3mm; border-radius: 10mm; letter-spacing: .1em; }
+
+.folio { position: absolute; bottom: 6mm; left: 11mm; right: 11mm; display: flex; justify-content: space-between; align-items: center;
   font-family: "Space Grotesk"; font-size: 7pt; color: var(--muted); }
-.folio .n { font-weight: 700; color: var(--ink); }
+.folio .n { font-weight: 700; color: #fff; background: var(--accent, var(--brand)); min-width: 6.4mm; height: 6.4mm; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; font-size: 8pt; }
 
 h1, h2, h3, h4 { font-family: "Space Grotesk", sans-serif; margin: 0; line-height: 1.12; color: var(--brand-dark); }
-h1 { font-size: 20pt; font-weight: 700; letter-spacing: -.01em; }
-h2 { font-size: 14pt; font-weight: 700; margin-bottom: 2.5mm; }
-h3 { font-size: 10.5pt; font-weight: 700; margin: 3.5mm 0 1.5mm; }
-h4 { font-size: 8.8pt; font-weight: 700; margin: 2.5mm 0 1mm; }
+h1 { font-size: 22pt; font-weight: 700; letter-spacing: -.01em; }
+h2 { font-size: 16pt; font-weight: 700; margin-bottom: 3.6mm; padding-bottom: 2.2mm; position: relative; }
+h2::after { content: ""; position: absolute; left: 0; bottom: 0; width: 14mm; height: 1.4mm; border-radius: 1mm; background: var(--accent, var(--brand-2)); }
+h3 { font-size: 11pt; font-weight: 700; margin: 3.4mm 0 1.6mm; }
+h4 { font-size: 9.6pt; font-weight: 700; margin: 2.5mm 0 1mm; }
 p { margin: 0 0 2mm; }
-ul, ol { margin: 0 0 2mm; padding-left: 4.5mm; }
+ul, ol { margin: 0 0 2.2mm; padding-left: 4.8mm; }
 li { margin-bottom: .8mm; }
-.small { font-size: 7.4pt; color: var(--muted); }
-.lead { font-size: 9.6pt; line-height: 1.45; }
+.small { font-size: 7.8pt; color: var(--muted); line-height: 1.4; }
+.lead { font-size: 10.2pt; line-height: 1.45; }
 .mono { font-family: "JetBrains Mono", monospace; }
-.src { position: absolute; bottom: 11.5mm; left: 11mm; right: 11mm; font-size: 6.4pt; color: var(--muted); line-height: 1.3; }
+.src { position: absolute; bottom: 12.5mm; left: 11mm; right: 11mm; font-size: 6.4pt; color: var(--muted); line-height: 1.3; }
 
-.box { border: 0.8pt solid var(--line); border-radius: 2.5mm; padding: 2.8mm 3.2mm; margin: 2.5mm 0; }
+.box { border: 0.8pt solid var(--line); border-radius: 3mm; padding: 2.6mm 3.4mm; margin: 2.6mm 0; }
 .box.tint { background: var(--tint); border-color: transparent; }
-.box.warn { background: #fff7e0; border-color: #e9cf86; }
-.box.accent { border-left: 2.2mm solid var(--accent, var(--brand)); }
+.box.warn { background: #fff6dc; border-color: #ecd48e; }
+.box.accent { border-left: 2.4mm solid var(--accent, var(--brand)); background: var(--cream); border-color: transparent; border-left-color: var(--accent, var(--brand)); }
+.box.accent.tint { background: var(--tint); }
 .box > :last-child { margin-bottom: 0; }
 
-table { width: 100%; border-collapse: collapse; font-size: 7.8pt; }
-th, td { border-bottom: 0.6pt solid var(--line); padding: 1.3mm 1.4mm; text-align: left; vertical-align: top; }
-th { font-family: "Space Grotesk"; font-weight: 700; font-size: 7.2pt; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+table { width: 100%; border-collapse: collapse; font-size: 8.3pt; }
+th, td { border-bottom: 0.6pt solid var(--line); padding: 1.4mm 1.5mm; text-align: left; vertical-align: top; }
+th { font-family: "Space Grotesk"; font-weight: 700; font-size: 7.4pt; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
 td.num, th.num { text-align: center; }
 
-/* reading table */
-.rt th.band { text-align: center; color: #fff; border-bottom: none; padding: 1.4mm 1mm; }
+.rt th.band { text-align: center; color: #fff; border-bottom: none; padding: 2mm 1mm; font-size: 7.2pt; }
 .rt th.b-low { background: var(--low); } .rt th.b-fair { background: var(--fair); }
 .rt th.b-good { background: var(--good); } .rt th.b-high { background: var(--high); }
-.rt td { text-align: center; font-family: "JetBrains Mono"; font-size: 8pt; font-weight: 600; padding: 2mm 1mm; }
-.rt td:first-child { text-align: left; font-family: "Inter"; font-weight: 700; white-space: nowrap; }
+.rt td { text-align: center; font-family: "JetBrains Mono"; font-size: 9.4pt; font-weight: 600; padding: 2.6mm 1mm; border-bottom: 1.2pt solid #fff; }
+.rt td:first-child { text-align: left; font-family: "Inter"; font-weight: 700; white-space: nowrap; background: none; font-size: 10pt; }
 .rt td.c-low { background: var(--low-bg); } .rt td.c-fair { background: var(--fair-bg); }
 .rt td.c-good { background: var(--good-bg); } .rt td.c-high { background: var(--high-bg); }
-.rt td .u { display: block; font-family: "Inter"; font-weight: 400; font-size: 6.4pt; color: var(--muted); }
-.rt td .best { display: block; font-family: "Inter"; font-weight: 600; font-size: 6.4pt; color: var(--good); }
+.rt td .u { display: block; font-family: "Inter"; font-weight: 400; font-size: 6.8pt; color: var(--muted); }
+.rt td .best { display: block; font-family: "Inter"; font-weight: 700; font-size: 6.8pt; color: var(--good); }
 
-.tag { display: inline-block; font-family: "Space Grotesk"; font-weight: 700; font-size: 6.8pt; padding: .3mm 1.6mm; border-radius: 1mm; color: #fff; letter-spacing: .03em; }
+.tag { display: inline-block; font-family: "Space Grotesk"; font-weight: 700; font-size: 7.4pt; padding: .5mm 2mm; border-radius: 1.4mm; color: #fff; letter-spacing: .03em; white-space: nowrap; }
 .tag.low { background: var(--low); } .tag.fair { background: var(--fair); } .tag.good { background: var(--good); } .tag.high { background: var(--high); }
 
-.code { font-family: "JetBrains Mono"; font-weight: 700; font-size: 8pt; background: var(--accent, var(--brand)); color: #fff; padding: .3mm 1.5mm; border-radius: 1mm; }
+/* a code is a round numbered badge, 1 to 7 */
+.code { display: inline-flex; align-items: center; justify-content: center; width: 5.6mm; height: 5.6mm; border-radius: 50%;
+  font-family: "Space Grotesk"; font-weight: 700; font-size: 9pt; background: var(--accent, var(--brand)); color: #fff; vertical-align: -1mm; }
 
-/* fix-it list */
-.fix { display: grid; grid-template-columns: 15mm 1fr; gap: 0; border-top: 0.6pt solid var(--line); }
+.fix { display: grid; grid-template-columns: 21mm 1fr; gap: 0; }
 .fix > div { padding: 1.7mm 1.2mm; border-bottom: 0.6pt solid var(--line); }
-.fix .k { font-family: "JetBrains Mono"; font-weight: 700; font-size: 9pt; color: var(--accent, var(--brand)); }
-.fix .k span { display: block; font-family: "Inter"; font-size: 6.2pt; font-weight: 600; color: var(--muted); }
+.fix .k { text-align: center; padding-top: 1.8mm; }
+.fix .k .badge { display: flex; align-items: center; justify-content: center; width: 9mm; height: 9mm; border-radius: 50%; margin: 0 auto .8mm;
+  font-family: "Space Grotesk"; font-style: normal; font-weight: 700; font-size: 15pt; color: #fff; background: var(--brand); }
+.fix .k span { display: block; font-family: "Space Grotesk"; font-size: 6.8pt; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .03em; line-height: 1.15; }
+.fix .k.n1 .badge { background: var(--c1); } .fix .k.n2 .badge { background: var(--c2); } .fix .k.n3 .badge { background: var(--c3); }
+.fix .k.n4 .badge { background: var(--c4); } .fix .k.n5 .badge { background: var(--c5); } .fix .k.n6 .badge { background: var(--c6); }
+.fix .k.n7 .badge { background: var(--c7); } .fix .k.hi .badge { background: var(--high); font-size: 13pt; }
 .fix b { color: var(--brand-dark); }
 
-/* crop opener */
-.opener { margin: -12mm -11mm 4mm; padding: 10mm 11mm 6mm; background: var(--accent); color: #fff; position: relative; }
-.opener .kicker { font-family: "Space Grotesk"; font-size: 7.5pt; letter-spacing: .14em; text-transform: uppercase; opacity: .85; }
-.opener h1 { color: #fff; font-size: 26pt; margin-top: 1mm; }
-.opener .sci { font-style: italic; opacity: .9; font-size: 8.5pt; }
-.opener .codes { position: absolute; right: 11mm; top: 10mm; text-align: right; font-family: "JetBrains Mono"; font-size: 7pt; opacity: .9; }
-.opener .codes b { display: block; font-size: 15pt; }
-.opener svg { position: absolute; right: 9mm; bottom: -1mm; opacity: .22; }
+/* chapter opener: full-width photo with the crop name on a colour band */
+.opener { margin: -11mm -11mm 3.4mm; height: 42mm; position: relative; color: #fff; background-size: cover; background-position: center; }
+.opener::before { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,.05) 25%, var(--accent) 100%); opacity: .96; }
+.opener > * { position: relative; }
+.opener .kicker { position: absolute; left: 11mm; top: 9mm; font-family: "Space Grotesk"; font-size: 7.4pt; letter-spacing: .14em; text-transform: uppercase;
+  background: rgba(255,255,255,.92); color: var(--accent); padding: 1mm 3mm; border-radius: 10mm; font-weight: 700; }
+.opener h1 { position: absolute; left: 11mm; bottom: 8.4mm; color: #fff; font-size: 26pt; }
+.opener .sci { position: absolute; left: 11mm; bottom: 3.2mm; font-style: italic; opacity: .95; font-size: 8pt; }
 
-.facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2mm; margin: 0 0 3mm; }
-.fact { background: var(--tint); border-radius: 2mm; padding: 2mm 2.4mm; }
-.fact .l { font-family: "Space Grotesk"; font-size: 6.4pt; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
-.fact .v { font-family: "Space Grotesk"; font-weight: 700; font-size: 10pt; color: var(--brand-dark); line-height: 1.15; margin-top: .4mm; }
+.facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.4mm; margin: 0 0 3mm; }
+.fact { background: var(--tint); border-radius: 2.5mm; padding: 1.8mm 2.4mm; border-bottom: 1.2mm solid var(--accent, var(--brand)); }
+.fact .l { font-family: "Space Grotesk"; font-size: 6.6pt; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.fact .v { font-family: "Space Grotesk"; font-weight: 700; font-size: 10.4pt; color: var(--brand-dark); line-height: 1.15; margin-top: .5mm; }
 
 .steps { counter-reset: s; list-style: none; padding: 0; }
-.steps li { counter-increment: s; position: relative; padding-left: 7.5mm; margin-bottom: 2mm; }
-.steps li::before { content: counter(s); position: absolute; left: 0; top: -.2mm; width: 5mm; height: 5mm; border-radius: 50%;
-  background: var(--accent, var(--brand)); color: #fff; font-family: "Space Grotesk"; font-weight: 700; font-size: 7.4pt;
+.steps li { counter-increment: s; position: relative; padding-left: 8mm; margin-bottom: 1.8mm; }
+.steps li::before { content: counter(s); position: absolute; left: 0; top: -.4mm; width: 5.6mm; height: 5.6mm; border-radius: 50%;
+  background: var(--accent, var(--brand)); color: #fff; font-family: "Space Grotesk"; font-weight: 700; font-size: 8.2pt;
   display: flex; align-items: center; justify-content: center; }
 
 .two { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; }
+.three { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.6mm; margin: 3mm 0; }
+.card { border-radius: 3mm; padding: 3mm; background: var(--tint); text-align: center; }
+.card .big { width: 10mm; height: 10mm; border-radius: 50%; background: var(--brand); color: #fff; margin: 0 auto 1.6mm; display: flex; align-items: center; justify-content: center;
+  font-family: "Space Grotesk"; font-weight: 700; font-size: 15pt; }
+.card b { display: block; font-family: "Space Grotesk"; font-size: 10.6pt; color: var(--brand-dark); }
+.card span { font-size: 8pt; color: var(--muted); line-height: 1.3; display: block; margin-top: .6mm; }
 
-/* stacked area bars (BSWM data) */
-.sbar { display: flex; height: 7.5mm; border-radius: 1.2mm; overflow: hidden; gap: 0.6mm; background: #fff; margin: 1mm 0 .8mm; }
-.sbar > div { display: flex; align-items: center; justify-content: center; font-family: "Space Grotesk"; font-weight: 700; font-size: 7pt; color: var(--ink); white-space: nowrap; }
+.sbar { display: flex; height: 8mm; border-radius: 1.4mm; overflow: hidden; gap: 0.6mm; background: #fff; margin: 1mm 0 .8mm; }
+.sbar > div { display: flex; align-items: center; justify-content: center; font-family: "Space Grotesk"; font-weight: 700; font-size: 7.6pt; color: var(--ink); white-space: nowrap; }
 .sbar .q1 { background: var(--q1); } .sbar .q2 { background: var(--q2); }
 .sbar .q3 { background: var(--q3); color: #fff; } .sbar .q4 { background: var(--q4); color: #fff; }
-.sleg { display: flex; justify-content: space-between; font-size: 6.4pt; color: var(--muted); margin-bottom: 2.6mm; }
-.key { display: flex; flex-wrap: wrap; gap: .6mm 3.2mm; font-size: 6.6pt; color: var(--muted); margin-bottom: 2.8mm; }
+.sleg { display: flex; justify-content: space-between; font-size: 6.8pt; color: var(--muted); margin-bottom: 2.6mm; }
+.key { display: flex; flex-wrap: wrap; gap: .6mm 3.2mm; font-size: 6.8pt; color: var(--muted); margin-bottom: 2.8mm; }
 .key i { display: inline-block; width: 2.6mm; height: 2.6mm; border-radius: .5mm; vertical-align: -.4mm; margin-right: 1mm; }
 .key i.q1 { background: var(--q1); outline: 0.4pt solid #b9cdb2; } .key i.q2 { background: var(--q2); } .key i.q3 { background: var(--q3); } .key i.q4 { background: var(--q4); }
-.chartlabel { font-family: "Space Grotesk"; font-weight: 700; font-size: 8.4pt; color: var(--brand-dark); display: flex; justify-content: space-between; }
-.chartlabel span { font-weight: 400; font-size: 6.8pt; color: var(--muted); }
+.chartlabel { font-family: "Space Grotesk"; font-weight: 700; font-size: 9pt; color: var(--brand-dark); display: flex; justify-content: space-between; }
+.chartlabel span { font-weight: 400; font-size: 7pt; color: var(--muted); }
 
-/* pH scale */
-.phscale { display: flex; height: 8mm; border-radius: 1.2mm; overflow: hidden; margin: 2mm 0 1mm; }
-.phscale div { flex: 1; display: flex; align-items: center; justify-content: center; font-family: "JetBrains Mono"; font-weight: 700; font-size: 7.4pt; color: #fff; }
+.phscale { display: flex; height: 9mm; border-radius: 1.6mm; overflow: hidden; margin: 2mm 0 1mm; }
+.phscale div { flex: 1; display: flex; align-items: center; justify-content: center; font-family: "JetBrains Mono"; font-weight: 700; font-size: 8pt; color: #fff; }
 
 /* cover */
 .cover { padding: 0; background: var(--brand-dark); color: #fff; }
-.cover .inner { position: absolute; inset: 0; padding: 14mm 12mm; display: flex; flex-direction: column; }
+.cover .deco { position: absolute; right: -30mm; top: -26mm; width: 130mm; height: 130mm; opacity: .5; }
+.cover .inner { position: absolute; inset: 0; padding: 14mm 12mm 12mm; display: flex; flex-direction: column; }
 .cover .brand { display: flex; align-items: center; gap: 3mm; font-family: "Space Grotesk"; font-weight: 700; letter-spacing: .12em; font-size: 8pt; text-transform: uppercase; }
-.cover .brand img { width: 13mm; height: 13mm; background: #fff; border-radius: 2.5mm; padding: 1.2mm; }
-.cover h1 { color: #fff; font-size: 30pt; line-height: 1.02; margin-top: 16mm; }
-.cover .sub { font-size: 10.5pt; margin-top: 4mm; color: #cfe3d3; max-width: 105mm; line-height: 1.4; }
-.cover .crops { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5mm; margin-top: auto; }
-.cover .crop { border-radius: 2.5mm; padding: 3.2mm 3.5mm; color: #fff; }
-.cover .crop b { display: block; font-family: "Space Grotesk"; font-size: 12pt; }
-.cover .crop span { font-size: 7pt; opacity: .9; }
-.cover .foot { margin-top: 6mm; font-size: 7pt; color: #a9c2ae; display: flex; justify-content: space-between; border-top: 0.6pt solid rgba(255,255,255,.2); padding-top: 3mm; }
+.cover .brand img { width: 13mm; height: 13mm; background: #fff; border-radius: 3mm; padding: 1.2mm; }
+.cover .kick { display: inline-block; align-self: flex-start; margin-top: 20mm; background: var(--sun); color: var(--brand-dark); font-family: "Space Grotesk"; font-weight: 700;
+  font-size: 8pt; letter-spacing: .12em; text-transform: uppercase; padding: 1.2mm 3.4mm; border-radius: 10mm; }
+.cover h1 { color: #fff; font-size: 40pt; line-height: .98; margin-top: 5mm; }
+.cover .sub { font-size: 12pt; margin-top: 5mm; color: #d6e9da; max-width: 100mm; line-height: 1.4; }
+.cover .crops { margin-top: auto; }
+.cover .crop { border-radius: 3mm; height: 27mm; color: #fff; background-size: cover; background-position: center; position: relative; overflow: hidden; }
+.cover .crop::before { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0) 30%, rgba(0,0,0,.72) 100%); }
+.cover .crop b { position: absolute; left: 3.4mm; bottom: 2.4mm; font-family: "Space Grotesk"; font-size: 12.5pt; }
+.cover .foot { margin-top: 5mm; font-size: 7.4pt; color: #a9c2ae; display: flex; justify-content: space-between; border-top: 0.6pt solid rgba(255,255,255,.2); padding-top: 3mm; }
 
 .toc { list-style: none; padding: 0; margin: 0; }
-.toc li { display: flex; align-items: baseline; gap: 2mm; padding: 1.7mm 0; border-bottom: 0.6pt dotted var(--line); margin: 0; }
+.toc li { display: flex; align-items: baseline; gap: 2mm; padding: 1.5mm 0; border-bottom: 0.6pt dotted #b9c7bc; margin: 0; font-size: 9.6pt; }
 .toc li .t { flex: 1; }
-.toc li .p { font-family: "Space Grotesk"; font-weight: 700; }
-.toc .dot { width: 2.6mm; height: 2.6mm; border-radius: 50%; flex: none; align-self: center; }
-.toc .sec { font-family: "Space Grotesk"; font-weight: 700; font-size: 7pt; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); border: none; padding-top: 3.5mm; }
+.toc li .p { font-family: "Space Grotesk"; font-weight: 700; color: var(--brand); }
+.toc .dot { width: 3mm; height: 3mm; border-radius: 50%; flex: none; align-self: center; }
+.toc .sec { font-family: "Space Grotesk"; font-weight: 700; font-size: 7.6pt; text-transform: uppercase; letter-spacing: .12em; color: var(--brand); border: none; padding-top: 3.6mm; padding-bottom: .6mm; }
 
-.record td { height: 8.2mm; }
+.record td { height: 7.6mm; }
 .measure td, .measure th { text-align: center; }
 .measure td:first-child, .measure th:first-child { text-align: left; }
+
+.codelist .row { display: grid; grid-template-columns: 11mm 1fr; align-items: center; gap: 2.4mm; padding: 1.3mm 0; border-bottom: 0.6pt solid var(--line); }
+.codelist .badge { width: 8.4mm; height: 8.4mm; border-radius: 50%; color: #fff; display: flex; align-items: center; justify-content: center; font-family: "Space Grotesk"; font-weight: 700; font-size: 14pt; }
+.codelist .row b { font-family: "Space Grotesk"; font-size: 10pt; color: var(--brand-dark); }
+.codelist .row div span { display: block; font-size: 7.8pt; color: var(--muted); line-height: 1.3; }
+.codelist .row em { font-style: normal; font-size: 7.4pt; color: var(--muted); text-align: right; }
+
+.opener.nophoto { background-image: radial-gradient(circle at 82% 30%, rgba(255,255,255,.16) 0 14mm, transparent 14.5mm), radial-gradient(circle at 82% 30%, rgba(255,255,255,.10) 0 24mm, transparent 24.5mm), radial-gradient(circle at 82% 30%, rgba(255,255,255,.06) 0 34mm, transparent 34.5mm); background-color: var(--accent); }
+.opener.nophoto::before { background: linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(0,0,0,.18) 100%); }
+.cover .crops { display: flex; flex-direction: column; gap: 2.4mm; }
+.cover .crops .r { display: grid; gap: 2.4mm; }
+.cover .crops .r4 { grid-template-columns: repeat(4, 1fr); }
+.cover .crops .r3 { grid-template-columns: repeat(3, 1fr); }
+.cover .crop { height: 23mm; }
+.cover .crop b { font-size: 9.6pt; left: 2.4mm; bottom: 2mm; }
+.cover .crop.plain { background-color: var(--ampalaya); }
+.cmp td, .cmp th { padding: 1.7mm 1.2mm; font-size: 8pt; }
+.cmp td:first-child { white-space: nowrap; }
+.cmp .dot { display: inline-block; width: 2.6mm; height: 2.6mm; border-radius: 50%; margin-right: 1.4mm; vertical-align: -.2mm; }
 </style>
 </head>
 <body>
 
 <!-- ============================ 1 COVER ============================ -->
 <section class="page cover">
+  <svg class="deco" viewBox="0 0 200 200" aria-hidden="true">
+    <g fill="none" stroke="#7fae4f" stroke-width=".7"><circle cx="100" cy="100" r="95"/><circle cx="100" cy="100" r="72"/><circle cx="100" cy="100" r="49"/><circle cx="100" cy="100" r="26"/></g>
+    <g fill="#2f6b3c"><path d="M100 100 C100 60 125 35 165 32 C168 70 140 98 100 100Z"/><path d="M100 100 C60 100 36 125 33 165 C70 168 98 140 100 100Z"/></g>
+    <g fill="#7fae4f"><path d="M100 100 C100 82 110 68 130 62 C131 82 120 97 100 100Z"/></g>
+  </svg>
   <div class="inner">
     <div class="brand"><img src="../../app/src/main/res/drawable-nodpi/logo_mark.png" alt="">SakaSense · Kasaka</div>
-    <h1>Soil Reading Guidebook for Farmers</h1>
-    <p class="sub">What your SakaSense numbers mean, and what to do about them, for the four vegetables most grown around Tacloban City and Leyte.</p>
+    <div class="kick">Soil guide for farmers</div>
+    <h1>Kasaka<br>Guidebook</h1>
+    <p class="sub">Read your soil numbers. Know what to do. Grow healthier vegetables.</p>
     <div class="crops">
-      <div class="crop" style="background:var(--kangkong)"><b>Kangkong</b><span>Upland water spinach · codes 72xx</span></div>
-      <div class="crop" style="background:var(--pechay)"><b>Pechay</b><span>Petsay · codes 71xx</span></div>
-      <div class="crop" style="background:var(--kamote)"><b>Sweet potato</b><span>Kamote · codes 23xx</span></div>
-      <div class="crop" style="background:var(--okra)"><b>Okra</b><span>Codes 31xx</span></div>
+      <div class="r r4"><div class="crop" style="background-image:url('../../app/src/main/res/drawable-nodpi/crop_kangkong.jpg')"><b>Kangkong</b></div><div class="crop" style="background-image:url('../../app/src/main/res/drawable-nodpi/crop_pechay.jpg')"><b>Pechay</b></div><div class="crop" style="background-image:url('../../app/src/main/res/drawable-nodpi/crop_sweet_potato.jpg')"><b>Sweet potato</b></div><div class="crop" style="background-image:url('../../app/src/main/res/drawable-nodpi/crop_okra.jpg')"><b>Okra</b></div></div>
+      <div class="r r3"><div class="crop" style="background-image:url('../../app/src/main/res/drawable-nodpi/crop_eggplant.jpg')"><b>Eggplant</b></div><div class="crop plain"><b>Ampalaya</b></div><div class="crop" style="background-image:url('../../app/src/main/res/drawable-nodpi/crop_corn.jpg')"><b>Corn</b></div></div>
     </div>
     <div class="foot"><span>Region VIII Edition · Eastern Visayas</span><span>First edition · 2026</span></div>
   </div>
@@ -187,35 +232,38 @@ td.num, th.num { text-align: center; }
 
 <!-- ============================ 2 ABOUT ============================ -->
 <section class="page">
-  <div class="run"><span><b>About this book</b></span><span>SakaSense Guidebook</span></div>
+  <div class="run"><span><b>Start here</b></span><span>Kasaka Guidebook</span></div>
   <h2>How to use this guidebook</h2>
-  <p class="lead">Your SakaSense device measures four things in your soil: <b>pH</b> (sourness), <b>Nitrogen (N)</b>, <b>Phosphorus (P)</b> and <b>Potassium (K)</b>. This book tells you whether each number is right for your crop, and what to add if it is not.</p>
-  <ol class="steps">
-    <li><b>Take a reading</b> the right way (page 4). A bad sample gives a wrong answer.</li>
-    <li><b>Open your crop's chapter.</b> Kangkong p. 8, Pechay p. 12, Sweet potato p. 16, Okra p. 20.</li>
-    <li><b>Find each number in the reading table.</b> Every number falls in one of four boxes:
-      <span class="tag low">✕ LOW</span> <span class="tag fair">! SLIGHTLY LOW</span> <span class="tag good">✓ GOOD</span> <span class="tag high">▲ HIGH</span></li>
-    <li><b>Read the code.</b> The device screen and the Kasaka app show a 4-digit code, like <span class="code" style="background:var(--kangkong)">7210</span>. Look it up in the crop's <i>Fix-it</i> page or the code finder on page 27.</li>
-    <li><b>Do the fix, then test again</b> 2 weeks later. Write it down in the record sheet (page 27).</li>
-  </ol>
+  <p class="lead">Your SakaSense device checks four things in your soil: <b>pH</b> (how sour it is), <b>N</b> nitrogen, <b>P</b> phosphorus and <b>K</b> potassium. This book tells you if each number is right for your crop, and what to do if it is not.</p>
+
+  <div class="three">
+    <div class="card"><div class="big">1</div><b>Test</b><span>Take 5 readings in your bed (page 4)</span></div>
+    <div class="card"><div class="big">2</div><b>Get your code</b><span>The app shows a number from 1 to 7</span></div>
+    <div class="card"><div class="big">3</div><b>Do the fix</b><span>Find that number on your crop's Fix-it page</span></div>
+  </div>
+
+  <h3 style="margin-top:2mm">Every number lands in one of four boxes</h3>
+  <table>
+    <tr><td style="width:34mm"><span class="tag low">✕ LOW</span></td><td>Clearly not enough. Use the <b>full</b> fix.</td></tr>
+    <tr><td><span class="tag fair">! SLIGHTLY LOW</span></td><td>A little short. Use <b>half</b> the fix.</td></tr>
+    <tr><td><span class="tag good">✓ GOOD</span></td><td>Just right. Follow the standard plan.</td></tr>
+    <tr><td><span class="tag high">▲ HIGH</span></td><td>More than enough. Skip that fertilizer.</td></tr>
+  </table>
 
   <h3>Amounts in this book</h3>
-  <p>All amounts are given for <b>one bed of 1 m × 20 m (20 m²)</b>, the standard bed size of the Department of Agriculture vegetable guides. The amount per hectare is shown beside it. One 50-kg bag per hectare equals <b>100 g per bed</b>. No scale? Use the spoon and cup table on page 25.</p>
+  <p>All amounts are for <b>one bed, 1 m × 20 m (20 m²)</b>. One 50-kg bag per hectare equals <b>100 g per bed</b>.</p>
 
   <div class="box warn">
     <h4 style="margin-top:0">Please read</h4>
-    <p>The SakaSense probe gives a <b>quick field estimate</b>, not a laboratory test. Use it to decide <i>what to do this week</i>. For a new field, or once a year, bring a soil sample to the <b>DA Regional Field Office 8 Regional Soils Laboratory</b> or ask your City/Municipal Agriculture Office about the Mobile Soil Laboratory (page 26). If a lab report and your probe disagree, follow the lab.</p>
-    <p>Always follow the label and safety instructions on fertilizer bags.</p>
+    <p style="margin-bottom:0">The probe gives a <b>quick field estimate</b>, not a laboratory test. For a new field, or once a year, bring a soil sample to the <b>DA Regional Field Office 8 Soils Laboratory</b> (page 38). If the lab and your probe disagree, follow the lab. Always follow the label on fertilizer bags.</p>
   </div>
-
-  <h3>Where the numbers come from</h3>
-  <p class="small">Soil conditions in Leyte: Bureau of Soils and Water Management (BSWM) Soil Health Assessment maps, made with DA-RFO 8 and LGUs. Crop pH, planting and fertilizer practice: DA Regional Field Unit and Agricultural Training Institute production guides, and Visayas State University (VSU) research in Leyte. Full list on page 28.</p>
-  <div class="folio"><span>SakaSense Guidebook · Region VIII</span><span class="n">2</span></div>
+  <p class="small">Soil facts come from BSWM maps of Leyte. Crop advice comes from Visayas State University research in Leyte and from national DA, BPI and ATI guides. Page 40 shows which sources are from Region 8 and which are not.</p>
+  <div class="folio"><span>Kasaka Guidebook</span><span class="n">2</span></div>
 </section>
 
 <!-- ============================ 3 CONTENTS ============================ -->
 <section class="page">
-  <div class="run"><span><b>Contents</b></span><span>SakaSense Guidebook</span></div>
+  <div class="run"><span><b>Contents</b></span><span>Kasaka Guidebook</span></div>
   <h2>Contents</h2>
   <ul class="toc">
     <li class="sec">Start here</li>
@@ -229,17 +277,17 @@ td.num, th.num { text-align: center; }
     <li><span class="dot" style="background:var(--pechay)"></span><span class="t">Pechay</span><span class="p">12</span></li>
     <li><span class="dot" style="background:var(--kamote)"></span><span class="t">Sweet potato (Kamote)</span><span class="p">16</span></li>
     <li><span class="dot" style="background:var(--okra)"></span><span class="t">Okra</span><span class="p">20</span></li>
+    <li><span class="dot" style="background:var(--eggplant)"></span><span class="t">Eggplant (Talong)</span><span class="p">24</span></li>
+    <li><span class="dot" style="background:var(--ampalaya)"></span><span class="t">Ampalaya (Bitter gourd)</span><span class="p">28</span></li>
+    <li><span class="dot" style="background:var(--corn)"></span><span class="t">Corn (Mais)</span><span class="p">32</span></li>
     <li class="sec">Soil care</li>
-    <li><span class="t">Fixing sour (acidic) and alkaline soil</span><span class="p">24</span></li>
-    <li><span class="t">Fertilizers and how to measure them</span><span class="p">25</span></li>
-    <li><span class="t">Compost and the DA soil laboratory</span><span class="p">26</span></li>
-    <li><span class="t">Code finder and record sheet</span><span class="p">27</span></li>
-    <li><span class="t">Sources and contacts</span><span class="p">28</span></li>
+    <li><span class="t">Fixing sour (acidic) and alkaline soil</span><span class="p">36</span></li>
+    <li><span class="t">Fertilizers and how to measure them</span><span class="p">37</span></li>
+    <li><span class="t">Compost and the DA soil laboratory</span><span class="p">38</span></li>
+    <li><span class="t">Code finder and record sheet</span><span class="p">39</span></li>
+    <li><span class="t">Sources and contacts</span><span class="p">40</span></li>
   </ul>
-  <div class="box tint" style="margin-top:5mm">
-    <p style="margin:0"><b>Every crop chapter has the same four pages:</b> 1 · how to grow it, 2 · the reading table, 3 · the standard fertilizer plan, 4 · the Fix-it codes.</p>
-  </div>
-  <div class="folio"><span>SakaSense Guidebook · Region VIII</span><span class="n">3</span></div>
+  <div class="folio"><span>Kasaka Guidebook</span><span class="n">3</span></div>
 </section>
 
 <!-- ============================ 4 TAKING A READING ============================ -->
@@ -275,7 +323,7 @@ td.num, th.num { text-align: center; }
     </div>
   </div>
   <p class="small">The device may also show temperature and humidity. These are for your records only; the soil advice in this book uses pH, N, P and K.</p>
-  <div class="folio"><span>SakaSense Guidebook · Region VIII</span><span class="n">4</span></div>
+  <div class="folio"><span>Kasaka Guidebook</span><span class="n">4</span></div>
 </section>
 
 <!-- ============================ 5 UNDERSTANDING ============================ -->
@@ -305,7 +353,7 @@ td.num, th.num { text-align: center; }
     <tr><td><span class="tag high">▲ HIGH</span></td><td>More than enough. <b>Skip</b> fertilizer with that nutrient; it is wasted money and can harm the crop.</td></tr>
   </table>
   <p class="small" style="margin-top:2mm">N, P and K are shown in <b>mg/kg</b> (the same as ppm). These are the units on your SakaSense screen and in the Kasaka app.</p>
-  <div class="folio"><span>SakaSense Guidebook · Region VIII</span><span class="n">5</span></div>
+  <div class="folio"><span>Kasaka Guidebook</span><span class="n">5</span></div>
 </section>
 
 <!-- ============================ 6 LEYTE SOILS ============================ -->
@@ -341,25 +389,26 @@ td.num, th.num { text-align: center; }
       <li>The very high-pH (alkaline) soils are mostly on <b>limestone in western Leyte</b>, not around Tacloban.</li>
     </ul>
   </div>
-  <p class="small">Every farm is different, so these are averages, not your result. Your own SakaSense reading tells you about <i>your</i> bed. Southern Leyte farms tested by the DA RFO 8 Mobile Soil Laboratory in 2026 were also found slightly to highly acidic.</p>
+  <p class="small">Every farm is different. These are averages, not your result. Your own reading tells you about <i>your</i> bed.</p>
   <div class="src">Source: BSWM, Province of Leyte Soil pH Map and Nutrient Status Maps (P, K), Key Corn Areas, 1:130,000, Soil Health Assessment Phase III with DA-RFO 8 and LGUs, 2018. K percentages recalculated from the map's hectare figures.</div>
-  <div class="folio"><span>SakaSense Guidebook · Region VIII</span><span class="n">6</span></div>
+  <div class="folio"><span>Kasaka Guidebook</span><span class="n">6</span></div>
 </section>
 
 <!-- ============================ 7 WHICH CROP ============================ -->
 <section class="page">
   <div class="run"><span><b>Start here</b></span><span>Choosing a crop</span></div>
   <h2>Which crop suits my soil?</h2>
-  <table>
-    <tr><th></th><th style="color:var(--kangkong)">Kangkong</th><th style="color:var(--pechay)">Pechay</th><th style="color:var(--kamote)">Sweet potato</th><th style="color:var(--okra)">Okra</th></tr>
-    <tr><td><b>Good pH</b></td><td>5.5–7.0</td><td>5.5–7.0<br><span class="small">best 6.0–6.5</span></td><td>5.5–6.8</td><td>5.5–7.0<br><span class="small">best 6.0–6.8</span></td></tr>
-    <tr><td><b>Copes with sour soil?</b></td><td>Fair</td><td>Poor</td><td><b>Best</b></td><td>Fair</td></tr>
-    <tr><td><b>Needs most</b></td><td>N</td><td>N</td><td>K</td><td>N and P</td></tr>
-    <tr><td><b>Water</b></td><td>A lot, every day</td><td>Every day</td><td>Little; hates standing water</td><td>When soil is dry</td></tr>
-    <tr><td><b>Rainy months</b></td><td>Very good</td><td>Raised beds and shelter</td><td>High ridges</td><td>Raised beds</td></tr>
-    <tr><td><b>First harvest</b></td><td>3–4 weeks after planting</td><td>3–4 weeks after transplanting</td><td>3–4 months<br><span class="small">(modern varieties)</span></td><td>Pods from 40–75 days</td></tr>
-    <tr><td><b>Codes</b></td><td class="mono">72xx</td><td class="mono">71xx</td><td class="mono">23xx</td><td class="mono">31xx</td></tr>
+  <table class="cmp">
+    <tr><th>Crop</th><th>Good pH</th><th>Sour soil?</th><th>Needs most</th><th>Water</th><th>First harvest</th></tr>
+    <tr><td><span class="dot" style="background:var(--kangkong)"></span><b>Kangkong</b></td><td>5.5–7.0</td><td>Fair</td><td>N</td><td>A lot, daily</td><td>3–4 weeks</td></tr>
+    <tr><td><span class="dot" style="background:var(--pechay)"></span><b>Pechay</b></td><td>5.5–7.0</td><td>Poor</td><td>N</td><td>Daily</td><td>3–4 weeks</td></tr>
+    <tr><td><span class="dot" style="background:var(--kamote)"></span><b>Sweet potato</b></td><td>5.5–6.8</td><td><b>Best</b></td><td>K</td><td>Little</td><td>3–4 months</td></tr>
+    <tr><td><span class="dot" style="background:var(--okra)"></span><b>Okra</b></td><td>5.5–7.0</td><td>Fair</td><td>N, P</td><td>When dry</td><td>40–75 days</td></tr>
+    <tr><td><span class="dot" style="background:var(--eggplant)"></span><b>Eggplant</b></td><td>5.5–6.8</td><td>Fair</td><td>N, K</td><td>35–40 mm a week</td><td>46–50 days*</td></tr>
+    <tr><td><span class="dot" style="background:var(--ampalaya)"></span><b>Ampalaya</b></td><td>5.5–6.5</td><td>Fair</td><td>N, K</td><td>Regular</td><td>45–75 days</td></tr>
+    <tr><td><span class="dot" style="background:var(--corn)"></span><b>Corn</b></td><td>5.5–7.0</td><td>Fair</td><td>N, P</td><td>When dry</td><td>95–110 days</td></tr>
   </table>
+  <p class="small" style="margin-top:1mm">* after transplanting. Others: after planting.</p>
 
   <h3>Quick choices</h3>
   <div class="box tint">
@@ -368,22 +417,21 @@ td.num, th.num { text-align: center; }
       <li><b>Low spot that stays wet?</b> Plant <b>kangkong</b>. Pechay, okra and sweet potato all suffer in waterlogged soil.</li>
       <li><b>Need cash fast?</b> <b>Pechay</b> and <b>kangkong</b> are ready in about a month.</li>
       <li><b>Low nitrogen and little money for fertilizer?</b> <b>Sweet potato</b> needs the least nitrogen. Too much N actually makes small roots.</li>
-      <li><b>Rotate.</b> Do not plant pechay in the same bed season after season; it invites club root. Follow it with sweet potato or okra.</li>
+      <li><b>Rotate.</b> Do not plant pechay in the same bed season after season; it invites club root. Do not follow eggplant with another nightshade crop (it invites bacterial wilt).</li>
     </ul>
   </div>
   <div class="box warn">
-    <p style="margin:0"><b>Tacloban weather:</b> rain falls all year, heaviest from November to January, and typhoons come often. Use raised beds (15–20 cm) and drainage canals for pechay and okra during the wet months. Sweet potato vines lie low and recover well after strong winds.</p>
+    <p style="margin:0"><b>Tacloban weather:</b> rain falls all year, heaviest from November to January, and typhoons come often. Use raised beds (15–20 cm) and drainage canals for pechay and okra during the wet months.</p>
   </div>
-  <div class="folio"><span>SakaSense Guidebook · Region VIII</span><span class="n">7</span></div>
+  <div class="folio"><span>Kasaka Guidebook</span><span class="n">7</span></div>
 </section>
 
 <!-- ============================ KANGKONG 8–11 ============================ -->
 <section class="page" style="--accent:var(--kangkong)">
-  <div class="opener">
+  <div class="opener" style="background-image:url('../../app/src/main/res/drawable-nodpi/crop_kangkong.jpg')">
     <div class="kicker">Crop chapter 1</div>
     <h1>Kangkong</h1>
     <div class="sci">Ipomoea aquatica / I. reptans · upland water spinach</div>
-    <div class="codes">Codes<b>72xx</b></div>
   </div>
   <div class="facts">
     <div class="fact"><div class="l">Good pH</div><div class="v">5.5 – 7.0</div></div>
@@ -403,7 +451,7 @@ td.num, th.num { text-align: center; }
     <h4 style="margin-top:0">Pests and diseases</h4>
     <p>Caterpillars, whiteflies and aphids are the common pests. Keep the bed clean, remove weeds and damaged plants, and check under the leaves twice a week. Use resistant varieties and biological or chemical control only when needed, following the label.</p>
   </div>
-  <div class="src">Source: DA RFU VII Guide on Vegetable Production / ATI-VII Kangkong Production Guide (2020); BPI Kangkong Production Guide.</div>
+  <div class="src">National guide, not Region 8: DA RFU VII Guide on Vegetable Production / ATI-VII Kangkong Production Guide (2020); BPI Kangkong Production Guide.</div>
   <div class="folio"><span>Kangkong · 1 of 4</span><span class="n">8</span></div>
 </section>
 
@@ -427,7 +475,7 @@ td.num, th.num { text-align: center; }
       <li>N 30 → <span class="tag fair">! SLIGHTLY LOW</span></li>
       <li>P 18 and K 95 → <span class="tag good">✓ GOOD</span></li>
     </ul>
-    <p style="margin:0">Code <span class="code">7210</span> (nitrogen low). Follow the standard plan and add <b>half</b> the N fix: 50 g urea per bed (page 11).</p>
+    <p style="margin:0">Code <span class="code">4</span> (nitrogen low). Follow the standard plan and add <b>half</b> the N fix: 50 g urea per bed (page 11).</p>
   </div>
 
   <h3>Why these numbers?</h3>
@@ -468,25 +516,24 @@ td.num, th.num { text-align: center; }
   <h2>Kangkong: Fix-it codes</h2>
   <p>Amounts are <b>in addition to</b> the standard plan. For <span class="tag fair">! SLIGHTLY LOW</span> use <b>half</b>.</p>
   <div class="fix">
-    <div class="k">7201<span>All good</span></div><div>Follow the standard plan (page 10). Test again in 2–3 weeks.</div>
-    <div class="k">7202<span>Too sour</span></div><div><b>Lime first.</b> Spread 4 kg agricultural lime or dolomite per bed (2 kg if only slightly sour), mix into the top 15 cm and water. Wait 2 weeks before planting or putting urea. See page 24.</div>
-    <div class="k">7203<span>Alkaline</span></div><div>Do not use lime or wood ash. Use <b>ammonium sulfate 21-0-0</b> instead of urea (2 g for every 1 g urea) and work in 1 extra sack of compost.</div>
-    <div class="k">7210<span>N low</span></div><div>Add <b>100 g urea</b> per bed, in two parts one week apart, dissolved in water. Check that leaves turn darker green within a week.</div>
-    <div class="k">7211<span>P low</span></div><div>At planting, mix <b>300 g ammonium phosphate 16-20-0</b> (or 400 g Solophos 0-18-0) into the planting rows. On a growing crop, place it in a shallow furrow beside the rows, cover and water.</div>
-    <div class="k">7212<span>K low</span></div><div>Add <b>100 g muriate of potash 0-0-60</b> per bed, spread between rows and watered in.</div>
-    <div class="k">7220<span>Several low</span></div><div>Add <b>300 g more 14-14-14</b> to the basal and 1 more sack of manure or compost. Test again after 2 weeks and fix whatever is still low. If pH is also low, do 7202 first.</div>
-    <div class="k">HIGH<span>▲ any</span></div><div>N high: skip urea this round. P high: use urea + 0-0-60 instead of 14-14-14. K high: skip 0-0-60.</div>
+    <div class="k n1"><em class="badge">1</em><span>All good</span></div><div>Follow the standard plan (page 10). Test again in 2–3 weeks.</div>
+    <div class="k n2"><em class="badge">2</em><span>Too sour</span></div><div><b>Lime first.</b> Spread 4 kg agricultural lime or dolomite per bed (2 kg if only slightly sour), mix into the top 15 cm and water. Wait 2 weeks before planting or putting urea. See page 36.</div>
+    <div class="k n3"><em class="badge">3</em><span>Alkaline</span></div><div>Do not use lime or wood ash. Use <b>ammonium sulfate 21-0-0</b> instead of urea (2 g for every 1 g urea) and work in 1 extra sack of compost.</div>
+    <div class="k n4"><em class="badge">4</em><span>Nitrogen low</span></div><div>Add <b>100 g urea</b> per bed, in two parts one week apart, dissolved in water. Check that leaves turn darker green within a week.</div>
+    <div class="k n5"><em class="badge">5</em><span>Phosphorus low</span></div><div>At planting, mix <b>300 g ammonium phosphate 16-20-0</b> (or 400 g Solophos 0-18-0) into the planting rows. On a growing crop, place it in a shallow furrow beside the rows, cover and water.</div>
+    <div class="k n6"><em class="badge">6</em><span>Potassium low</span></div><div>Add <b>100 g muriate of potash 0-0-60</b> per bed, spread between rows and watered in.</div>
+    <div class="k n7"><em class="badge">7</em><span>Several low</span></div><div>Add <b>300 g more 14-14-14</b> to the basal and 1 more sack of manure or compost. Test again after 2 weeks and fix whatever is still low. If pH is also low, do code 2 first.</div>
+    <div class="k hi"><em class="badge">▲</em><span>Too high</span></div><div>N high: skip urea this round. P high: use urea + 0-0-60 instead of 14-14-14. K high: skip 0-0-60.</div>
   </div>
   <div class="folio"><span>Kangkong · 4 of 4</span><span class="n">11</span></div>
 </section>
 
 <!-- ============================ PECHAY 12–15 ============================ -->
 <section class="page" style="--accent:var(--pechay)">
-  <div class="opener">
+  <div class="opener" style="background-image:url('../../app/src/main/res/drawable-nodpi/crop_pechay.jpg')">
     <div class="kicker">Crop chapter 2</div>
     <h1>Pechay</h1>
     <div class="sci">Brassica rapa L. · petsay</div>
-    <div class="codes">Codes<b>71xx</b></div>
   </div>
   <div class="facts">
     <div class="fact"><div class="l">Good pH</div><div class="v">5.5 – 7.0</div></div>
@@ -506,7 +553,7 @@ td.num, th.num { text-align: center; }
     <h4 style="margin-top:0">Pests and diseases</h4>
     <p>Pests: aphids, flea beetles and diamondback moth. Diseases: powdery mildew on seedlings, bacterial soft rot, and <b>club root</b> (swollen, knotted roots; plants wilt at midday). Pull and bury sick plants. Club root is worse in sour soil, so keeping pH near 6.5 and rotating crops helps prevent it.</p>
   </div>
-  <div class="src">Source: DA RFU VII Guide on Vegetable Production / ATI-VII Pechay Production Guide (2020); DA Caraga pechay techno guide (pH 5.5–6.5).</div>
+  <div class="src">National guide, not Region 8: DA RFU VII Guide on Vegetable Production / ATI-VII Pechay Production Guide (2020); DA Caraga pechay techno guide (pH 5.5–6.5).</div>
   <div class="folio"><span>Pechay · 1 of 4</span><span class="n">12</span></div>
 </section>
 
@@ -530,7 +577,7 @@ td.num, th.num { text-align: center; }
       <li>P 10 → <span class="tag low">✕ LOW</span></li>
       <li>N 55 and K 120 → <span class="tag good">✓ GOOD</span></li>
     </ul>
-    <p style="margin:0">pH comes first: code <span class="code">7102</span>. Lime with 2 kg per bed, wait 2 weeks, then plant using the P fix of code <span class="code">7111</span>.</p>
+    <p style="margin:0">pH comes first: code <span class="code">2</span>. Lime with 2 kg per bed, wait 2 weeks, then plant using the P fix of code <span class="code">5</span>.</p>
   </div>
 
   <h3>Why these numbers?</h3>
@@ -567,25 +614,24 @@ td.num, th.num { text-align: center; }
   <h2>Pechay: Fix-it codes</h2>
   <p>Amounts are <b>in addition to</b> the standard plan. For <span class="tag fair">! SLIGHTLY LOW</span> use <b>half</b>.</p>
   <div class="fix">
-    <div class="k">7101<span>All good</span></div><div>Follow the standard plan (page 14). Test again after harvest.</div>
-    <div class="k">7102<span>Too sour</span></div><div><b>Lime first.</b> 4 kg agricultural lime or dolomite per bed (2 kg if only slightly sour), mixed into the top 15 cm and watered. Wait 2 weeks before transplanting. Liming also helps prevent club root. See page 24.</div>
-    <div class="k">7103<span>Alkaline</span></div><div>No lime or wood ash. Use <b>ammonium sulfate 21-0-0</b> in place of urea (2 g for every 1 g urea). Add 1 extra sack of compost.</div>
-    <div class="k">7110<span>N low</span></div><div>Add <b>100 g urea</b> per bed: 50 g at 1 week and 50 g at 2 weeks, on top of the standard doses, dissolved in water.</div>
-    <div class="k">7111<span>P low</span></div><div>Mix <b>300 g ammonium phosphate 16-20-0</b> (or 400 g Solophos 0-18-0) into the bed before transplanting. Phosphorus barely moves in soil, so it must be near the roots.</div>
-    <div class="k">7112<span>K low</span></div><div>Add <b>100 g muriate of potash 0-0-60</b> per bed, mixed in at basal.</div>
-    <div class="k">7120<span>Several low</span></div><div>Add <b>300 g more 14-14-14</b> and 1 more sack of manure or compost at basal. Test again 2 weeks after transplanting and fix what is still low. If pH is also low, do 7102 first.</div>
-    <div class="k">HIGH<span>▲ any</span></div><div>N high: skip urea this round. P high: use urea + 0-0-60 instead of 14-14-14. K high: skip 0-0-60.</div>
+    <div class="k n1"><em class="badge">1</em><span>All good</span></div><div>Follow the standard plan (page 14). Test again after harvest.</div>
+    <div class="k n2"><em class="badge">2</em><span>Too sour</span></div><div><b>Lime first.</b> 4 kg agricultural lime or dolomite per bed (2 kg if only slightly sour), mixed into the top 15 cm and watered. Wait 2 weeks before transplanting. Liming also helps prevent club root. See page 36.</div>
+    <div class="k n3"><em class="badge">3</em><span>Alkaline</span></div><div>No lime or wood ash. Use <b>ammonium sulfate 21-0-0</b> in place of urea (2 g for every 1 g urea). Add 1 extra sack of compost.</div>
+    <div class="k n4"><em class="badge">4</em><span>Nitrogen low</span></div><div>Add <b>100 g urea</b> per bed: 50 g at 1 week and 50 g at 2 weeks, on top of the standard doses, dissolved in water.</div>
+    <div class="k n5"><em class="badge">5</em><span>Phosphorus low</span></div><div>Mix <b>300 g ammonium phosphate 16-20-0</b> (or 400 g Solophos 0-18-0) into the bed before transplanting. Phosphorus barely moves in soil, so it must be near the roots.</div>
+    <div class="k n6"><em class="badge">6</em><span>Potassium low</span></div><div>Add <b>100 g muriate of potash 0-0-60</b> per bed, mixed in at basal.</div>
+    <div class="k n7"><em class="badge">7</em><span>Several low</span></div><div>Add <b>300 g more 14-14-14</b> and 1 more sack of manure or compost at basal. Test again 2 weeks after transplanting and fix what is still low. If pH is also low, do code 2 first.</div>
+    <div class="k hi"><em class="badge">▲</em><span>Too high</span></div><div>N high: skip urea this round. P high: use urea + 0-0-60 instead of 14-14-14. K high: skip 0-0-60.</div>
   </div>
   <div class="folio"><span>Pechay · 4 of 4</span><span class="n">15</span></div>
 </section>
 
 <!-- ============================ SWEET POTATO 16–19 ============================ -->
 <section class="page" style="--accent:var(--kamote)">
-  <div class="opener">
+  <div class="opener" style="background-image:url('../../app/src/main/res/drawable-nodpi/crop_sweet_potato.jpg')">
     <div class="kicker">Crop chapter 3</div>
     <h1>Sweet potato</h1>
     <div class="sci">Ipomoea batatas (L.) Lam. · kamote</div>
-    <div class="codes">Codes<b>23xx</b></div>
   </div>
   <div class="facts">
     <div class="fact"><div class="l">Good pH</div><div class="v">5.5 – 6.8</div></div>
@@ -606,7 +652,7 @@ td.num, th.num { text-align: center; }
     <h4 style="margin-top:0">Pests and diseases</h4>
     <p>The worst pest is the <b>sweet potato weevil</b>, which bores into the roots and makes them bitter. Prevent it by using clean cuttings, hilling up to close soil cracks, harvesting on time, and removing old roots and vines after harvest. Rotate with a non-<i>Ipomoea</i> crop; kangkong is a relative of kamote, so do not rotate kamote with kangkong.</p>
   </div>
-  <div class="src">Source: VSU research in Leyte (Asio et al., Tropentag 2018: 0.75 × 0.25 m spacing, ridges); DA RFO 02 Sweet Potato Production Guide (2012); PhilRootcrops, VSU.</div>
+  <div class="src">Region 8: VSU research in Leyte (Asio et al., Tropentag 2018: 0.75 × 0.25 m spacing, ridges); PhilRootcrops, VSU. National guide, not Region 8: DA RFO 02 Sweet Potato Production Guide (2012).</div>
   <div class="folio"><span>Sweet potato · 1 of 4</span><span class="n">16</span></div>
 </section>
 
@@ -630,7 +676,7 @@ td.num, th.num { text-align: center; }
       <li>N 70 → <span class="tag high">▲ HIGH</span>: skip all extra nitrogen.</li>
       <li>K 90 → <span class="tag fair">! SLIGHTLY LOW</span></li>
     </ul>
-    <p style="margin:0">Code <span class="code">2312</span>. Use 0-0-60 only (half the K fix, 75 g per bed) and no urea.</p>
+    <p style="margin:0">Code <span class="code">6</span>. Use 0-0-60 only (half the K fix, 75 g per bed) and no urea.</p>
   </div>
 
   <h3>Why these numbers?</h3>
@@ -667,25 +713,24 @@ td.num, th.num { text-align: center; }
   <h2>Sweet potato: Fix-it codes</h2>
   <p>Amounts are <b>in addition to</b> the standard plan, per 20 m². For <span class="tag fair">! SLIGHTLY LOW</span> use <b>half</b>.</p>
   <div class="fix">
-    <div class="k">2301<span>All good</span></div><div>Follow the standard plan (page 18).</div>
-    <div class="k">2302<span>Too sour</span></div><div>Below pH 4.5: spread <b>2 kg agricultural lime or dolomite</b> per 20 m², mix into the soil and wait 2 weeks before planting. Between 4.5 and 5.4 liming is optional; kamote tolerates it. See page 24.</div>
-    <div class="k">2303<span>Alkaline</span></div><div>No lime or ash. Work in 1–2 sacks of compost. If you must add N, use ammonium sulfate 21-0-0.</div>
-    <div class="k">2310<span>N low</span></div><div>Add only <b>50 g urea</b> at hilling-up (1 month), never more. Do not repeat it.</div>
-    <div class="k">2311<span>P low</span></div><div>Mix <b>200 g ammonium phosphate 16-20-0</b> (or 250 g Solophos 0-18-0) into the planting furrow.</div>
-    <div class="k">2312<span>K low</span></div><div>Add <b>150 g muriate of potash 0-0-60</b>: half at planting, half at hilling-up. Potassium makes bigger, better roots.</div>
-    <div class="k">2320<span>Several low</span></div><div>Add <b>200 g more 14-14-14</b> and 1 sack manure or compost at planting. Test again at 1 month and fix what is still low. If pH is below 4.5, do 2302 first.</div>
-    <div class="k">HIGH<span>▲ any</span></div><div><b>N high (above 60): use no 14-14-14 at all;</b> feed with 0-0-60 only (100 g per 20 m²). P high: use 0-0-60 alone. K high: skip 0-0-60.</div>
+    <div class="k n1"><em class="badge">1</em><span>All good</span></div><div>Follow the standard plan (page 18).</div>
+    <div class="k n2"><em class="badge">2</em><span>Too sour</span></div><div>Below pH 4.5: spread <b>2 kg agricultural lime or dolomite</b> per 20 m², mix into the soil and wait 2 weeks before planting. Between 4.5 and 5.4 liming is optional; kamote tolerates it. See page 36.</div>
+    <div class="k n3"><em class="badge">3</em><span>Alkaline</span></div><div>No lime or ash. Work in 1–2 sacks of compost. If you must add N, use ammonium sulfate 21-0-0.</div>
+    <div class="k n4"><em class="badge">4</em><span>Nitrogen low</span></div><div>Add only <b>50 g urea</b> at hilling-up (1 month), never more. Do not repeat it.</div>
+    <div class="k n5"><em class="badge">5</em><span>Phosphorus low</span></div><div>Mix <b>200 g ammonium phosphate 16-20-0</b> (or 250 g Solophos 0-18-0) into the planting furrow.</div>
+    <div class="k n6"><em class="badge">6</em><span>Potassium low</span></div><div>Add <b>150 g muriate of potash 0-0-60</b>: half at planting, half at hilling-up. Potassium makes bigger, better roots.</div>
+    <div class="k n7"><em class="badge">7</em><span>Several low</span></div><div>Add <b>200 g more 14-14-14</b> and 1 sack manure or compost at planting. Test again at 1 month and fix what is still low. If pH is below 4.5, do code 2 first.</div>
+    <div class="k hi"><em class="badge">▲</em><span>Too high</span></div><div><b>N high (above 60): use no 14-14-14 at all;</b> feed with 0-0-60 only (100 g per 20 m²). P high: use 0-0-60 alone. K high: skip 0-0-60.</div>
   </div>
   <div class="folio"><span>Sweet potato · 4 of 4</span><span class="n">19</span></div>
 </section>
 
 <!-- ============================ OKRA 20–23 ============================ -->
 <section class="page" style="--accent:var(--okra)">
-  <div class="opener">
+  <div class="opener" style="background-image:url('../../app/src/main/res/drawable-nodpi/crop_okra.jpg')">
     <div class="kicker">Crop chapter 4</div>
     <h1>Okra</h1>
     <div class="sci">Abelmoschus esculentus (L.) Moench</div>
-    <div class="codes">Codes<b>31xx</b></div>
   </div>
   <div class="facts">
     <div class="fact"><div class="l">Good pH</div><div class="v">5.5 – 7.0</div></div>
@@ -706,7 +751,7 @@ td.num, th.num { text-align: center; }
     <h4 style="margin-top:0">Pests and diseases</h4>
     <p>Pests: cotton stainer and stink bugs. Diseases: cercospora leaf blight, powdery mildew, fruit rot and root-knot nematode. Uproot and bury sick plants, keep the field clean, and rotate. Root-knot nematodes build up when okra follows okra.</p>
   </div>
-  <div class="src">Source: DA RFU VII Guide on Vegetable Production / ATI-VII Okra Production Guide (2020); BPI Okra Production Guide; DA RFO 02 Okra Production Guide.</div>
+  <div class="src">National guide, not Region 8: DA RFU VII Guide on Vegetable Production / ATI-VII Okra Production Guide (2020); BPI Okra Production Guide; DA RFO 02 Okra Production Guide.</div>
   <div class="folio"><span>Okra · 1 of 4</span><span class="n">20</span></div>
 </section>
 
@@ -730,7 +775,7 @@ td.num, th.num { text-align: center; }
       <li>N 32 → <span class="tag fair">! SLIGHTLY LOW</span></li>
       <li>P 14 → <span class="tag fair">! SLIGHTLY LOW</span></li>
     </ul>
-    <p style="margin:0">Two nutrients are short, so the code is <span class="code">3120</span> (several low). Add the extra 14-14-14 at basal and test again 2 weeks after the seedlings come up.</p>
+    <p style="margin:0">Two nutrients are short, so the code is <span class="code">7</span> (several low). Add the extra 14-14-14 at basal and test again 2 weeks after the seedlings come up.</p>
   </div>
 
   <h3>Why these numbers?</h3>
@@ -766,19 +811,319 @@ td.num, th.num { text-align: center; }
   <h2>Okra: Fix-it codes</h2>
   <p>Amounts are <b>in addition to</b> the standard plan. For <span class="tag fair">! SLIGHTLY LOW</span> use <b>half</b>.</p>
   <div class="fix">
-    <div class="k">3101<span>All good</span></div><div>Follow the standard plan (page 22). Test again 2 weeks after side-dress 1.</div>
-    <div class="k">3102<span>Too sour</span></div><div><b>Lime first.</b> 4 kg agricultural lime or dolomite per bed (2 kg if only slightly sour), mixed into the top 15 cm and watered. Wait 2 weeks before sowing. See page 24.</div>
-    <div class="k">3103<span>Alkaline</span></div><div>No lime or wood ash. Use <b>ammonium sulfate 21-0-0</b> instead of urea (2 g for every 1 g urea). Add 1 extra sack of compost.</div>
-    <div class="k">3110<span>N low</span></div><div>Add <b>100 g urea</b> per bed, in two parts one week apart (or with each side-dress), covered and watered in.</div>
-    <div class="k">3111<span>P low</span></div><div>Mix <b>300 g ammonium phosphate 16-20-0</b> (or 400 g Solophos 0-18-0) into the rows before sowing. On a growing crop, place it in a furrow beside the row, cover and water.</div>
-    <div class="k">3112<span>K low</span></div><div>Add <b>100 g muriate of potash 0-0-60</b> per bed at basal, or split between the two side-dresses.</div>
-    <div class="k">3120<span>Several low</span></div><div>Add <b>300 g more 14-14-14</b> and 1 more sack of manure or compost at basal. Test again 2 weeks after the seedlings come up and fix what is still low. If pH is also low, do 3102 first.</div>
-    <div class="k">HIGH<span>▲ any</span></div><div>N high: skip the next urea side-dress. P high: use urea + 0-0-60 instead of 14-14-14. K high: skip 0-0-60.</div>
+    <div class="k n1"><em class="badge">1</em><span>All good</span></div><div>Follow the standard plan (page 22). Test again 2 weeks after side-dress 1.</div>
+    <div class="k n2"><em class="badge">2</em><span>Too sour</span></div><div><b>Lime first.</b> 4 kg agricultural lime or dolomite per bed (2 kg if only slightly sour), mixed into the top 15 cm and watered. Wait 2 weeks before sowing. See page 36.</div>
+    <div class="k n3"><em class="badge">3</em><span>Alkaline</span></div><div>No lime or wood ash. Use <b>ammonium sulfate 21-0-0</b> instead of urea (2 g for every 1 g urea). Add 1 extra sack of compost.</div>
+    <div class="k n4"><em class="badge">4</em><span>Nitrogen low</span></div><div>Add <b>100 g urea</b> per bed, in two parts one week apart (or with each side-dress), covered and watered in.</div>
+    <div class="k n5"><em class="badge">5</em><span>Phosphorus low</span></div><div>Mix <b>300 g ammonium phosphate 16-20-0</b> (or 400 g Solophos 0-18-0) into the rows before sowing. On a growing crop, place it in a furrow beside the row, cover and water.</div>
+    <div class="k n6"><em class="badge">6</em><span>Potassium low</span></div><div>Add <b>100 g muriate of potash 0-0-60</b> per bed at basal, or split between the two side-dresses.</div>
+    <div class="k n7"><em class="badge">7</em><span>Several low</span></div><div>Add <b>300 g more 14-14-14</b> and 1 more sack of manure or compost at basal. Test again 2 weeks after the seedlings come up and fix what is still low. If pH is also low, do code 2 first.</div>
+    <div class="k hi"><em class="badge">▲</em><span>Too high</span></div><div>N high: skip the next urea side-dress. P high: use urea + 0-0-60 instead of 14-14-14. K high: skip 0-0-60.</div>
   </div>
   <div class="folio"><span>Okra · 4 of 4</span><span class="n">23</span></div>
 </section>
 
-<!-- ============================ 24 LIME ============================ -->
+<!-- ============================ EGGPLANT 24-27 ============================ -->
+<section class="page" style="--accent:var(--eggplant)">
+  <div class="opener" style="background-image:url('../../app/src/main/res/drawable-nodpi/crop_eggplant.jpg')">
+    <div class="kicker">Crop chapter 5</div>
+    <h1>Eggplant</h1>
+    <div class="sci">Solanum melongena L. · talong</div>
+  </div>
+  <div class="facts">
+    <div class="fact"><div class="l">Good pH</div><div class="v">5.5 – 6.8</div></div>
+    <div class="fact"><div class="l">First harvest</div><div class="v">46–50 days</div></div>
+    <div class="fact"><div class="l">Spacing</div><div class="v">50 cm apart</div></div>
+  </div>
+  <h3 style="margin-top:0">Growing eggplant</h3>
+  <ol class="steps">
+    <li><b>Soil.</b> Sandy loam or clay loam, pH 5.5–6.8. Eggplant needs about 35–40 mm of water a week.</li>
+    <li><b>Seedlings.</b> Sow in trays. Seedlings are ready 30–35 days after sowing, with 3–4 true leaves. About 10 days after they come up, water with 1 tablespoon urea or ammonium sulfate in 4 liters of water. Do not overwater (it causes damping-off).</li>
+    <li><b>Prepare the land.</b> Plow and harrow 2–3 times. Make beds 1 m wide and 20 cm high, 50 cm apart. Mix in the basal fertilizer (page 26). Plastic mulch is optional and keeps away insects that hide under the leaves.</li>
+    <li><b>Transplant</b> one seedling per hole, 50 cm apart along the bed and 10 cm in from the bed edge. Replant any missing or wilted plants after 3–5 days.</li>
+    <li><b>Water</b> every week, more in dry weather, but never let water stand around the plants. Prune a few leaves so air can move through.</li>
+    <li><b>Harvest</b> 46–50 days after transplanting. Pick young, tender fruit early in the morning, about twice a week, with pruning shears. Pick all the fruit so the plant keeps fruiting.</li>
+  </ol>
+  <div class="box accent">
+    <h4 style="margin-top:0">Pests and diseases</h4>
+    <p>Main pest: the <b>fruit and shoot borer</b>. Cut off wilting shoots and fruit with a hole, and pick the borer out by hand. <b>Bacterial wilt</b> (plants wilt suddenly while still green): rotate, never plant after tomato, pepper or potato, and pull and bury sick plants.</p>
+  </div>
+  <div class="src">National guide, not Region 8: ATI e-extension eggplant guide (as republished by Business Diary); BPI Organic Eggplant Production guide (borer control). No Region 8 eggplant guide was found. Confirm with your DA RFO 8 technician.</div>
+  <div class="folio"><span>Eggplant · 1 of 4</span><span class="n">24</span></div>
+</section>
+
+<section class="page" style="--accent:var(--eggplant)">
+  <div class="run"><span><b>Eggplant</b></span><span>Reading table</span></div>
+  <h2>Eggplant: reading your numbers</h2>
+  <p>Find each of your averaged numbers in its row.</p>
+  <table class="rt">
+    <tr><th style="width:20mm"></th><th class="band b-low">✕ LOW</th><th class="band b-fair">! SLIGHTLY LOW</th><th class="band b-good">✓ GOOD</th><th class="band b-high">▲ HIGH</th></tr>
+    <tr><td>pH</td><td class="c-low">below 5.0<span class="u">too sour</span></td><td class="c-fair">5.0 – 5.4<span class="u">a bit sour</span></td><td class="c-good">5.5 – 6.8<span class="best">best 6.0–6.5</span></td><td class="c-high">above 6.8<span class="u">alkaline</span></td></tr>
+    <tr><td>N <span class="small">mg/kg</span></td><td class="c-low">below 30</td><td class="c-fair">30 – 49</td><td class="c-good">50 – 110</td><td class="c-high">above 110</td></tr>
+    <tr><td>P <span class="small">mg/kg</span></td><td class="c-low">below 12</td><td class="c-fair">12 – 19</td><td class="c-good">20 – 50</td><td class="c-high">above 50</td></tr>
+    <tr><td>K <span class="small">mg/kg</span></td><td class="c-low">below 70</td><td class="c-fair">70 – 109</td><td class="c-good">110 – 230</td><td class="c-high">above 230</td></tr>
+  </table>
+
+  <h3>Example</h3>
+  <div class="box tint">
+    <p>Average of 5 readings: <span class="mono"><b>pH 6.1 · N 38 · P 28 · K 140</b></span></p>
+    <ul>
+      <li>pH 6.1, P 28 and K 140 → <span class="tag good">✓ GOOD</span></li>
+      <li>N 38 → <span class="tag fair">! SLIGHTLY LOW</span></li>
+    </ul>
+    <p style="margin:0">Only nitrogen is a little short, so the code is <span class="code">4</span>. Follow the standard plan and add <b>half</b> the N fix: 50 g urea per bed (page 27).</p>
+  </div>
+
+  <h3>Why these numbers?</h3>
+  <p class="small">pH range from the ATI e-extension eggplant guide (5.5–6.8). Eggplant fruits for many weeks and takes up a lot of nitrogen and potassium, so those "good" boxes start higher than for kangkong. The N, P and K boxes are SakaSense estimates for the probe, not figures from the guide. Check them with a DA laboratory test.</p>
+  <div class="folio"><span>Eggplant · 2 of 4</span><span class="n">25</span></div>
+</section>
+
+<section class="page" style="--accent:var(--eggplant)">
+  <div class="run"><span><b>Eggplant</b></span><span>Standard fertilizer plan</span></div>
+  <h2>Eggplant: standard fertilizer plan</h2>
+  <p>Use this plan when all four readings are <span class="tag good">✓ GOOD</span>. Amounts are for one bed of 1 × 20 m.</p>
+  <table>
+    <tr><th style="width:26mm">When</th><th>Per bed (1 × 20 m)</th><th style="width:28mm">Per hectare</th></tr>
+    <tr><td><b>Basal</b><br><span class="small">at bed making, before transplanting</span></td><td>1 kg chicken manure or other organic fertilizer<br><b>800 g ammonium phosphate 16-20-0</b> (about 3 cups)<br><b>800 g ammonium sulfate 21-0-0</b> (about 3 cups)<br><b>200 g muriate of potash 0-0-60</b> (¾ cup)<br><span class="small">Spread on both sides of the bed and mix into the top soil.</span></td><td>5 bags 16-20-0<br>5 bags 21-0-0<br>1 bag 0-0-60</td></tr>
+    <tr><td><b>Side-dress</b><br><span class="small">3 weeks after transplanting, and again at first harvest</span></td><td><b>100 g urea</b> + <b>50 g 0-0-60</b>, placed in a shallow furrow about 20 cm from the plants. Cover with soil and water.</td><td>¾ bag urea<br>⅓ bag 0-0-60 each time</td></tr>
+  </table>
+
+  <div class="box accent tint">
+    <h4 style="margin-top:0">Tips</h4>
+    <ul>
+      <li>The basal amounts follow the ATI guide, which gives them per 10 m of bed. Doubled here for a 20 m bed.</li>
+      <li>Keep side-dressing every 3–4 weeks while you are still picking fruit.</li>
+      <li>Stop watering from above on cloudy days; wet leaves invite disease.</li>
+    </ul>
+  </div>
+
+  <div class="box warn">
+    <p style="margin:0"><b>Book estimate:</b> the ATI guide shows how to side-dress but does not give the amounts. The side-dress here is the SakaSense estimate. Ask your agriculture technician to confirm it.</p>
+  </div>
+  <div class="src">Basal amounts and starter solution: ATI e-extension eggplant guide (national). Basal gives about 99-53-40 kg N-P₂O₅-K₂O per hectare of beds and paths.</div>
+  <div class="folio"><span>Eggplant · 3 of 4</span><span class="n">26</span></div>
+</section>
+
+<section class="page" style="--accent:var(--eggplant)">
+  <div class="run"><span><b>Eggplant</b></span><span>Fix-it codes</span></div>
+  <h2>Eggplant: Fix-it codes</h2>
+  <p>Amounts are <b>in addition to</b> the standard plan. For <span class="tag fair">! SLIGHTLY LOW</span> use <b>half</b>.</p>
+  <div class="fix">
+    <div class="k n1"><em class="badge">1</em><span>All good</span></div><div>Follow the standard plan (page 26). Test again at the first flowers.</div>
+    <div class="k n2"><em class="badge">2</em><span>Too sour</span></div><div><b>Lime first.</b> 4 kg agricultural lime or dolomite per bed (2 kg if only slightly sour), mixed into the top 15 cm and watered. Wait 2 weeks before transplanting. See page 36.</div>
+    <div class="k n3"><em class="badge">3</em><span>Alkaline</span></div><div>No lime or wood ash. Keep the ammonium sulfate in the basal, use it instead of urea for side-dressing (2 g for every 1 g urea) and add 1 sack of compost.</div>
+    <div class="k n4"><em class="badge">4</em><span>Nitrogen low</span></div><div>Add <b>100 g urea</b> per bed, in two parts one week apart, dissolved in water and placed beside the plants.</div>
+    <div class="k n5"><em class="badge">5</em><span>Phosphorus low</span></div><div>Mix <b>300 g more ammonium phosphate 16-20-0</b> (or 400 g Solophos 0-18-0) into the bed before transplanting. On a growing crop, place it in a furrow beside the row, cover and water.</div>
+    <div class="k n6"><em class="badge">6</em><span>Potassium low</span></div><div>Add <b>100 g muriate of potash 0-0-60</b> per bed. Potassium helps fruit size and color.</div>
+    <div class="k n7"><em class="badge">7</em><span>Several low</span></div><div>Add <b>300 g more 14-14-14</b> and 1 more sack of manure or compost at basal. Test again 2 weeks after transplanting and fix what is still low. If pH is also low, do code 2 first.</div>
+    <div class="k hi"><em class="badge">▲</em><span>Too high</span></div><div>N high: skip the next urea. P high: skip the extra ammonium phosphate. K high: skip 0-0-60.</div>
+  </div>
+  <div class="folio"><span>Eggplant · 4 of 4</span><span class="n">27</span></div>
+</section>
+
+<!-- ============================ AMPALAYA 28-31 ============================ -->
+<section class="page" style="--accent:var(--ampalaya)">
+  <div class="opener nophoto">
+    <div class="kicker">Crop chapter 6</div>
+    <h1>Ampalaya</h1>
+    <div class="sci">Momordica charantia L. · palia (Bisaya)</div>
+  </div>
+  <div class="facts">
+    <div class="fact"><div class="l">Good pH</div><div class="v">5.5 – 6.5</div></div>
+    <div class="fact"><div class="l">First harvest</div><div class="v">45–75 days</div></div>
+    <div class="fact"><div class="l">Spacing</div><div class="v">1.5 m × 75 cm</div></div>
+  </div>
+  <h3 style="margin-top:0">Growing ampalaya</h3>
+  <ol class="steps">
+    <li><b>Soil.</b> Well-drained sandy loam, pH 5.5–6.5, in full sun. Ampalaya can be planted any time of the year.</li>
+    <li><b>Prepare the land.</b> Plow and harrow 2–3 times until the soil is loose. Make beds 1–1.5 m wide. Plastic mulch is optional. Spread dolomite and manure 2 weeks before planting (page 30).</li>
+    <li><b>Seeds.</b> Soak overnight, or carefully crack the seed coat, then sow the next day in seedbeds or plug trays. Transplant 7–10 days after the seeds come up.</li>
+    <li><b>Plant</b> with 1.5 m between rows and 75 cm between hills.</li>
+    <li><b>Trellis.</b> Use an A-type or table-type trellis of bamboo poles. Remove the lower side shoots and thin some upper shoots to keep the fruits big.</li>
+    <li><b>Harvest</b> when fruits are still green and shiny but full size: 15–20 days after pollination, or 45–75 days after planting. Pick 2–3 times a week for 2–3 months.</li>
+  </ol>
+  <div class="box accent">
+    <h4 style="margin-top:0">Pests and diseases</h4>
+    <p><b>Fruit fly</b>: wrap fruits in clear plastic or paper and hang a fruit fly attractant. <b>Downy mildew</b>: remove infected leaves. <b>Bacterial wilt</b>: rotate crops and keep the field clean. Also watch for aphids, cutworm and leaf folders.</p>
+  </div>
+  <div class="src">Region 8: BPI notes Eastern Visayas planted 284 ha and produced 1,180 tons in 2011 (PSA figures). National guide, not Region 8: BPI Ampalaya Production Guide (2013). No Region 8 ampalaya guide was found. Confirm with your DA RFO 8 technician.</div>
+  <div class="folio"><span>Ampalaya · 1 of 4</span><span class="n">28</span></div>
+</section>
+
+<section class="page" style="--accent:var(--ampalaya)">
+  <div class="run"><span><b>Ampalaya</b></span><span>Reading table</span></div>
+  <h2>Ampalaya: reading your numbers</h2>
+  <p>Find each of your averaged numbers in its row. For ampalaya, <b>too much nitrogen</b> makes leaves instead of fruit.</p>
+  <table class="rt">
+    <tr><th style="width:20mm"></th><th class="band b-low">✕ LOW</th><th class="band b-fair">! SLIGHTLY LOW</th><th class="band b-good">✓ GOOD</th><th class="band b-high">▲ HIGH</th></tr>
+    <tr><td>pH</td><td class="c-low">below 5.0<span class="u">too sour</span></td><td class="c-fair">5.0 – 5.4<span class="u">a bit sour</span></td><td class="c-good">5.5 – 6.5<span class="best">best 5.8–6.5</span></td><td class="c-high">above 6.5<span class="u">alkaline</span></td></tr>
+    <tr><td>N <span class="small">mg/kg</span></td><td class="c-low">below 25</td><td class="c-fair">25 – 39</td><td class="c-good">40 – 100</td><td class="c-high">above 100</td></tr>
+    <tr><td>P <span class="small">mg/kg</span></td><td class="c-low">below 12</td><td class="c-fair">12 – 19</td><td class="c-good">20 – 50</td><td class="c-high">above 50</td></tr>
+    <tr><td>K <span class="small">mg/kg</span></td><td class="c-low">below 60</td><td class="c-fair">60 – 99</td><td class="c-good">100 – 200</td><td class="c-high">above 200</td></tr>
+  </table>
+
+  <h3>Example</h3>
+  <div class="box tint">
+    <p>Average of 5 readings: <span class="mono"><b>pH 5.3 · N 45 · P 22 · K 110</b></span></p>
+    <ul>
+      <li>pH 5.3 → <span class="tag fair">! SLIGHTLY LOW</span> (a bit sour)</li>
+      <li>N 45, P 22 and K 110 → <span class="tag good">✓ GOOD</span></li>
+    </ul>
+    <p style="margin:0">pH comes first: code <span class="code">2</span>. Lime with 2 kg per bed, wait 2 weeks, then plant and follow the standard plan.</p>
+  </div>
+
+  <h3>Why these numbers?</h3>
+  <p class="small">The pH range (5.5–6.5) is from the BPI ampalaya guide. Ampalaya is a climbing vine that fruits for 2–3 months, so it needs steady nitrogen and potassium; the BPI guide side-dresses with urea and muriate of potash. The N, P and K boxes are SakaSense estimates for the probe, not figures from the guide. Check them with a DA laboratory test.</p>
+  <div class="folio"><span>Ampalaya · 2 of 4</span><span class="n">29</span></div>
+</section>
+
+<section class="page" style="--accent:var(--ampalaya)">
+  <div class="run"><span><b>Ampalaya</b></span><span>Standard fertilizer plan</span></div>
+  <h2>Ampalaya: standard fertilizer plan</h2>
+  <p>Use this plan when all four readings are <span class="tag good">✓ GOOD</span>. A 20 m² bed holds about 18 hills.</p>
+  <table>
+    <tr><th style="width:26mm">When</th><th>Per bed (20 m², about 18 hills)</th><th style="width:28mm">Per hectare</th></tr>
+    <tr><td><b>2 weeks before planting</b></td><td><b>400 g dolomite</b> and <b>4 kg</b> processed chicken manure or vermicompost, mixed into the soil.</td><td>4 bags dolomite<br>2 tons manure</td></tr>
+    <tr><td><b>Basal</b><br><span class="small">at planting</span></td><td><b>200 g complete 14-14-14</b> (¾ cup), about 1 tablespoon (10–15 g) in each hill.</td><td>2 bags 14-14-14</td></tr>
+    <tr><td><b>Side-dress</b><br><span class="small">once a month</span></td><td><b>200 g urea</b> (1 cup) + <b>200 g muriate of potash 0-0-60</b> (¾ cup): 10–15 g of each per hill, beside the plants. Cover and water.</td><td>2 bags urea<br>2 bags 0-0-60 each time</td></tr>
+    <tr><td><b>Every week</b><br><span class="small">from planting to fruiting</span></td><td>Spray fermented plant juice (FPJ), as in the BPI guide.</td><td>—</td></tr>
+  </table>
+
+  <div class="box accent tint">
+    <h4 style="margin-top:0">Tips</h4>
+    <ul>
+      <li>In the rainy season rain washes fertilizer away. Split the side-dress into two half doses, two weeks apart.</li>
+      <li>Do not put fertilizer on the leaves or touch the stems.</li>
+      <li>Wrap fruits in clear plastic or paper to protect them from fruit flies.</li>
+    </ul>
+  </div>
+
+  <div class="box warn">
+    <p style="margin:0"><b>Book estimate:</b> the BPI guide gives amounts per hill. The per-bed amounts here are those figures times 18 hills. The "split in two in the rainy season" tip is the SakaSense estimate.</p>
+  </div>
+  <div class="src">Dolomite, manure, basal and side-dress rates: BPI Ampalaya Production Guide (2013), a national guide. Spacing 1.5 m × 0.75 m is also from that guide.</div>
+  <div class="folio"><span>Ampalaya · 3 of 4</span><span class="n">30</span></div>
+</section>
+
+<section class="page" style="--accent:var(--ampalaya)">
+  <div class="run"><span><b>Ampalaya</b></span><span>Fix-it codes</span></div>
+  <h2>Ampalaya: Fix-it codes</h2>
+  <p>Amounts are <b>in addition to</b> the standard plan. For <span class="tag fair">! SLIGHTLY LOW</span> use <b>half</b>.</p>
+  <div class="fix">
+    <div class="k n1"><em class="badge">1</em><span>All good</span></div><div>Follow the standard plan (page 30). Test again 2 weeks after the first flowers.</div>
+    <div class="k n2"><em class="badge">2</em><span>Too sour</span></div><div><b>Lime first.</b> 4 kg agricultural lime or dolomite per bed (2 kg if only slightly sour) on top of the 400 g in the plan. Mix into the top 15 cm and water. Wait 2 weeks before planting. See page 36.</div>
+    <div class="k n3"><em class="badge">3</em><span>Alkaline</span></div><div>No lime or wood ash. Use <b>ammonium sulfate 21-0-0</b> instead of urea (2 g for every 1 g urea) and add 1 extra sack of compost.</div>
+    <div class="k n4"><em class="badge">4</em><span>Nitrogen low</span></div><div>Add <b>100 g urea</b> per bed, in two parts two weeks apart. Do not add more; too much nitrogen gives leaves, not fruit.</div>
+    <div class="k n5"><em class="badge">5</em><span>Phosphorus low</span></div><div>Mix <b>300 g ammonium phosphate 16-20-0</b> (or 400 g Solophos 0-18-0) into the planting hills. On a growing crop, place it in a shallow furrow beside the row, cover and water.</div>
+    <div class="k n6"><em class="badge">6</em><span>Potassium low</span></div><div>Add <b>100 g muriate of potash 0-0-60</b> per bed, split between two side-dresses.</div>
+    <div class="k n7"><em class="badge">7</em><span>Several low</span></div><div>Add <b>200 g more 14-14-14</b> and 1 more sack of manure or compost at planting. Test again 2 weeks after the seedlings are planted and fix what is still low. If pH is also low, do code 2 first.</div>
+    <div class="k hi"><em class="badge">▲</em><span>Too high</span></div><div>N high: skip the next urea. P high: use urea + 0-0-60 instead of 14-14-14. K high: skip 0-0-60.</div>
+  </div>
+  <div class="folio"><span>Ampalaya · 4 of 4</span><span class="n">31</span></div>
+</section>
+
+<!-- ============================ CORN 32-35 ============================ -->
+<section class="page" style="--accent:var(--corn)">
+  <div class="opener" style="background-image:url('../../app/src/main/res/drawable-nodpi/crop_corn.jpg')">
+    <div class="kicker">Crop chapter 7</div>
+    <h1>Corn</h1>
+    <div class="sci">Zea mays L. · mais</div>
+  </div>
+  <div class="facts">
+    <div class="fact"><div class="l">Good pH</div><div class="v">5.5 – 7.0</div></div>
+    <div class="fact"><div class="l">Dry grain</div><div class="v">95–110 days</div></div>
+    <div class="fact"><div class="l">Spacing</div><div class="v">75 × 20–25 cm</div></div>
+  </div>
+  <h3 style="margin-top:0">Growing corn</h3>
+  <ol class="steps">
+    <li><b>Soil.</b> Well-drained loam. In Leyte most corn is <b>white corn</b>, grown for food. Test the soil first: if pH is below 5.5, lime.</li>
+    <li><b>Prepare the land.</b> Plow and harrow 2–3 times. If lime is needed, spread it at least <b>4 weeks</b> before planting (page 36).</li>
+    <li><b>Make furrows</b> 75 cm apart and about 8 cm deep on the day you plant. Put the basal fertilizer in the furrow and cover it with a little soil (page 34).</li>
+    <li><b>Plant</b> one seed per hill, 20–25 cm apart in the furrow. Do not let the seed touch the fertilizer.</li>
+    <li><b>Side-dress</b> 25–30 days after planting beside the rows. Weed and hill up at the same time. Water in dry weather, especially when the tassels and silks appear.</li>
+    <li><b>Harvest</b> dry grain 95–110 days after planting, when the husks are dry and the kernels are hard. For green (boiled) corn, pick earlier, when the silks are brown and the kernels are milky.</li>
+  </ol>
+  <div class="box accent">
+    <h4 style="margin-top:0">Pests and diseases</h4>
+    <p>Check the center of each plant (the whorl) twice a week for <b>corn borer</b> and <b>fall armyworm</b>. Remove weeds, rotate with a legume or root crop, and ask your agriculture technician what to spray and when.</p>
+  </div>
+  <div class="src">Region 8: Leyte makes about 60% of the region's corn (PSA RSSO 8, Q1 2025), and 93% of Leyte's corn is white corn (Q4 2024). National guide, not Region 8: spacing, lime and harvest days from a Philippine corn extension guide (undated, no agency named). Confirm with your DA RFO 8 technician.</div>
+  <div class="folio"><span>Corn · 1 of 4</span><span class="n">32</span></div>
+</section>
+
+<section class="page" style="--accent:var(--corn)">
+  <div class="run"><span><b>Corn</b></span><span>Reading table</span></div>
+  <h2>Corn: reading your numbers</h2>
+  <p>Find each of your averaged numbers in its row.</p>
+  <table class="rt">
+    <tr><th style="width:20mm"></th><th class="band b-low">✕ LOW</th><th class="band b-fair">! SLIGHTLY LOW</th><th class="band b-good">✓ GOOD</th><th class="band b-high">▲ HIGH</th></tr>
+    <tr><td>pH</td><td class="c-low">below 5.0<span class="u">too sour</span></td><td class="c-fair">5.0 – 5.4<span class="u">a bit sour</span></td><td class="c-good">5.5 – 7.0<span class="best">best 5.8–6.8</span></td><td class="c-high">above 7.0<span class="u">alkaline</span></td></tr>
+    <tr><td>N <span class="small">mg/kg</span></td><td class="c-low">below 30</td><td class="c-fair">30 – 49</td><td class="c-good">50 – 110</td><td class="c-high">above 110</td></tr>
+    <tr><td>P <span class="small">mg/kg</span></td><td class="c-low">below 10</td><td class="c-fair">10 – 14</td><td class="c-good">15 – 40</td><td class="c-high">above 40</td></tr>
+    <tr><td>K <span class="small">mg/kg</span></td><td class="c-low">below 50</td><td class="c-fair">50 – 79</td><td class="c-good">80 – 200</td><td class="c-high">above 200</td></tr>
+  </table>
+
+  <h3>Example</h3>
+  <div class="box tint">
+    <p>Average of 5 readings: <span class="mono"><b>pH 6.1 · N 28 · P 12 · K 95</b></span></p>
+    <ul>
+      <li>pH 6.1 and K 95 → <span class="tag good">✓ GOOD</span></li>
+      <li>N 28 → <span class="tag fair">! SLIGHTLY LOW</span></li>
+      <li>P 12 → <span class="tag fair">! SLIGHTLY LOW</span></li>
+    </ul>
+    <p style="margin:0">Two nutrients are short, so the code is <span class="code">7</span>. Add the extra 14-14-14 at planting and test again 2 weeks after the plants come up.</p>
+  </div>
+
+  <h3>Why these numbers?</h3>
+  <p class="small">The BSWM maps of Leyte (page 6) were made for the key corn areas of the province, and phosphorus was the most common shortage. Corn takes up a lot of nitrogen. The standard plan is the national corn rate of 90-60-60 kg N-P₂O₅-K₂O per hectare, which a Visayas State University trial in Inopacan, Leyte used. The N, P and K boxes are SakaSense estimates for the probe. Check them with a DA laboratory test.</p>
+  <div class="folio"><span>Corn · 2 of 4</span><span class="n">33</span></div>
+</section>
+
+<section class="page" style="--accent:var(--corn)">
+  <div class="run"><span><b>Corn</b></span><span>Standard fertilizer plan</span></div>
+  <h2>Corn: standard fertilizer plan</h2>
+  <p>Use this plan when all four readings are <span class="tag good">✓ GOOD</span>. Amounts are for 20 m² (about 13 m of row).</p>
+  <table>
+    <tr><th style="width:26mm">When</th><th>Per 20 m²</th><th style="width:28mm">Per hectare</th></tr>
+    <tr><td><b>At planting</b><br><span class="small">in the furrow</span></td><td><b>800 g complete 14-14-14</b> (about 3 cups). Cover with soil before sowing.</td><td>8 bags 14-14-14</td></tr>
+    <tr><td><b>25–30 days after planting</b><br><span class="small">side-dress</span></td><td><b>150 g urea 46-0-0</b> (¾ cup) beside the rows. Cover with soil and water.</td><td>1½ bags urea</td></tr>
+  </table>
+
+  <div class="box accent tint">
+    <h4 style="margin-top:0">Tips</h4>
+    <ul>
+      <li>This gives about <b>90-56-56</b> kg N-P₂O₅-K₂O per hectare, close to the national 90-60-60 rate.</li>
+      <li>Organic option: a VSU trial in Inopacan, Leyte, found <b>half the fertilizer plus chicken dung</b> worked as well as the full rate. That is 400 g 14-14-14 + 75 g urea + about 1 sack of well-rotted chicken dung.</li>
+      <li>Apply urea in the late afternoon and water it in. Never let it touch the leaves.</li>
+    </ul>
+  </div>
+
+  <div class="box warn">
+    <p style="margin:0"><b>Book estimate:</b> the sack of chicken dung is the SakaSense estimate; the VSU summary does not give the amount. Ask your agriculture technician to confirm it.</p>
+  </div>
+  <div class="src">Rate: national corn recommendation (90-60-60) used by Lina et al., Annals of Tropical Research 36(Suppl), VSU, Inopacan, Leyte (2014). Organic option: same trial and Ratilla et al. (2014), Inopacan, Leyte.</div>
+  <div class="folio"><span>Corn · 3 of 4</span><span class="n">34</span></div>
+</section>
+
+<section class="page" style="--accent:var(--corn)">
+  <div class="run"><span><b>Corn</b></span><span>Fix-it codes</span></div>
+  <h2>Corn: Fix-it codes</h2>
+  <p>Amounts are <b>in addition to</b> the standard plan. For <span class="tag fair">! SLIGHTLY LOW</span> use <b>half</b>.</p>
+  <div class="fix">
+    <div class="k n1"><em class="badge">1</em><span>All good</span></div><div>Follow the standard plan (page 34). Test again 2 weeks after side-dressing.</div>
+    <div class="k n2"><em class="badge">2</em><span>Too sour</span></div><div><b>Lime first.</b> 4 kg agricultural lime or dolomite per 20 m² (2 kg if only slightly sour), mixed into the top 15 cm and watered. Wait <b>4 weeks</b> before planting. See page 36.</div>
+    <div class="k n3"><em class="badge">3</em><span>Alkaline</span></div><div>No lime or wood ash. Use <b>ammonium sulfate 21-0-0</b> instead of urea (2 g for every 1 g urea) and work in 1 sack of compost.</div>
+    <div class="k n4"><em class="badge">4</em><span>Nitrogen low</span></div><div>Add <b>100 g urea</b> per 20 m², in two parts: at 25–30 days and again 2 weeks later, beside the rows and watered in.</div>
+    <div class="k n5"><em class="badge">5</em><span>Phosphorus low</span></div><div>Mix <b>300 g ammonium phosphate 16-20-0</b> (or 400 g Solophos 0-18-0) into the planting furrow. Phosphorus barely moves in soil, so keep it near the roots.</div>
+    <div class="k n6"><em class="badge">6</em><span>Potassium low</span></div><div>Add <b>100 g muriate of potash 0-0-60</b> per 20 m² at the side-dress, beside the rows.</div>
+    <div class="k n7"><em class="badge">7</em><span>Several low</span></div><div>Add <b>300 g more 14-14-14</b> and 1 sack of manure or compost at planting. Test again 2 weeks after the plants come up and fix what is still low. If pH is also low, do code 2 first.</div>
+    <div class="k hi"><em class="badge">▲</em><span>Too high</span></div><div>N high: skip the urea side-dress. P high: use urea + 0-0-60 instead of 14-14-14. K high: skip 0-0-60.</div>
+  </div>
+  <div class="folio"><span>Corn · 4 of 4</span><span class="n">35</span></div>
+</section>
+
+<!-- ============================ 36 LIME ============================ -->
 <section class="page">
   <div class="run"><span><b>Soil care</b></span><span>Acidic and alkaline soil</span></div>
   <h2>Fixing sour (acidic) and alkaline soil</h2>
@@ -810,7 +1155,7 @@ td.num, th.num { text-align: center; }
       <li>Use <b>ammonium sulfate 21-0-0</b> as your nitrogen source; it slowly lowers pH. Use 2 g of ammonium sulfate for every 1 g urea in the plan.</li>
     </ul>
   </div>
-  <div class="folio"><span>SakaSense Guidebook · Region VIII</span><span class="n">24</span></div>
+  <div class="folio"><span>Kasaka Guidebook</span><span class="n">36</span></div>
 </section>
 
 <!-- ============================ 25 FERTILIZER + MEASURE ============================ -->
@@ -818,7 +1163,7 @@ td.num, th.num { text-align: center; }
   <div class="run"><span><b>Soil care</b></span><span>Fertilizers</span></div>
   <h2>Fertilizers and how to measure them</h2>
   <table>
-    <tr><th style="width:35mm">Product</th><th style="width:16mm" class="num">N-P-K</th><th>Use it for</th></tr>
+    <tr><th style="width:35mm">Product</th><th style="width:24mm" class="num">N-P-K</th><th>Use it for</th></tr>
     <tr><td><b>Complete</b></td><td class="num mono">14-14-14</td><td>Basal feeding of all crops; "several low"</td></tr>
     <tr><td><b>Urea</b></td><td class="num mono">46-0-0</td><td>Nitrogen low; side-dressing leafy crops</td></tr>
     <tr><td><b>Ammonium sulfate</b></td><td class="num mono">21-0-0</td><td>Nitrogen on alkaline soil</td></tr>
@@ -838,19 +1183,11 @@ td.num, th.num { text-align: center; }
     <tr><td>Lime / dolomite powder</td><td>≈ 12 g</td><td>≈ 300 g</td></tr>
   </table>
   <p class="small" style="margin-top:1mm">Granule sizes differ between brands. Best practice: weigh one cup of your fertilizer on a store scale once, and mark the level on your scoop.</p>
-
-  <div class="box accent tint">
-    <h4 style="margin-top:0">Quick conversions used in this book</h4>
-    <ul>
-      <li>1 bed = 1 m × 20 m = 20 m² = 1/500 of a hectare</li>
-      <li>1 bag (50 kg) per hectare = <b>100 g per bed</b></li>
-      <li>100 g urea ≈ ½ cup · 400 g 14-14-14 ≈ 1½ cups · 50 g 0-0-60 ≈ 3 tbsp</li>
-    </ul>
-  </div>
+  <p class="small" style="margin-top:2mm">Quick facts: 1 bed = 1 m × 20 m = 20 m². One 50-kg bag per hectare = 100 g per bed.</p>
   <div class="box warn">
     <p style="margin:0"><b>Safety:</b> wear gloves; wash hands before eating; keep fertilizer away from children, animals and drinking water; never store it with food or seeds.</p>
   </div>
-  <div class="folio"><span>SakaSense Guidebook · Region VIII</span><span class="n">25</span></div>
+  <div class="folio"><span>Kasaka Guidebook</span><span class="n">37</span></div>
 </section>
 
 <!-- ============================ 26 COMPOST + LAB ============================ -->
@@ -875,35 +1212,25 @@ td.num, th.num { text-align: center; }
     <li>Put it in a clean plastic bag and label it: your name, barangay, field, crop planned, date.</li>
     <li>Bring it to the <b>DA RFO 8 Regional Soils Laboratory</b>, or ask your City/Municipal Agriculture Office about the DA <b>Mobile Soil Laboratory</b> schedule.</li>
   </ol>
-
-  <h3>Reading a BSWM lab report</h3>
-  <table>
-    <tr><th>Rating</th><th class="num">P Bray 1 (ppm)</th><th class="num">P Olsen (ppm)</th><th class="num">K (ppm, cold H₂SO₄)</th></tr>
-    <tr><td>Low</td><td class="num">0 – 2</td><td class="num">0 – 6</td><td class="num">0 – 35</td></tr>
-    <tr><td>Moderately low</td><td class="num">2.1 – 6</td><td class="num">6.1 – 10</td><td class="num">36 – 55</td></tr>
-    <tr><td>Moderately high</td><td class="num">6.1 – 10</td><td class="num">10.1 – 15</td><td class="num">56 – 75</td></tr>
-    <tr><td>High</td><td class="num">10.1 – 15</td><td class="num">15.1 – 20</td><td class="num">above 75</td></tr>
-  </table>
-  <p class="small" style="margin-top:1mm">Lab methods are different from the probe, so do not compare the numbers one-to-one. Compare the <b>rating</b> (low / high). Ratings from the BSWM Leyte nutrient status maps (2018).</p>
-  <div class="folio"><span>SakaSense Guidebook · Region VIII</span><span class="n">26</span></div>
+  <div class="box tint"><p><b>Reading your lab report:</b> the lab rates phosphorus (P) and potassium (K) as <b>Low, Moderately low, Moderately high</b> or <b>High</b>. Lab and probe use different methods, so compare the <b>rating</b>, not the number.</p></div>
+  <div class="folio"><span>Kasaka Guidebook</span><span class="n">38</span></div>
 </section>
 
 <!-- ============================ 27 CODE FINDER + RECORD ============================ -->
 <section class="page">
-  <div class="run"><span><b>Look-up</b></span><span>Codes and records</span></div>
+  <div class="run"><span><b>Look-up</b></span><span>Kasaka Guidebook</span></div>
   <h2>Code finder</h2>
-  <table style="font-size:7.6pt">
-    <tr><th>Problem</th><th class="num" style="color:var(--kangkong)">Kangkong</th><th class="num" style="color:var(--pechay)">Pechay</th><th class="num" style="color:var(--kamote)">Kamote</th><th class="num" style="color:var(--okra)">Okra</th></tr>
-    <tr><td>All good</td><td class="num mono">7201</td><td class="num mono">7101</td><td class="num mono">2301</td><td class="num mono">3101</td></tr>
-    <tr><td>Too sour (acidic)</td><td class="num mono">7202</td><td class="num mono">7102</td><td class="num mono">2302</td><td class="num mono">3102</td></tr>
-    <tr><td>Alkaline</td><td class="num mono">7203</td><td class="num mono">7103</td><td class="num mono">2303</td><td class="num mono">3103</td></tr>
-    <tr><td>Nitrogen low</td><td class="num mono">7210</td><td class="num mono">7110</td><td class="num mono">2310</td><td class="num mono">3110</td></tr>
-    <tr><td>Phosphorus low</td><td class="num mono">7211</td><td class="num mono">7111</td><td class="num mono">2311</td><td class="num mono">3111</td></tr>
-    <tr><td>Potassium low</td><td class="num mono">7212</td><td class="num mono">7112</td><td class="num mono">2312</td><td class="num mono">3112</td></tr>
-    <tr><td>Several low</td><td class="num mono">7220</td><td class="num mono">7120</td><td class="num mono">2320</td><td class="num mono">3120</td></tr>
-    <tr><td>Fix-it page</td><td class="num">11</td><td class="num">15</td><td class="num">19</td><td class="num">23</td></tr>
-  </table>
-  <p class="small" style="margin-top:1mm">How a code is chosen: <b>pH comes first.</b> If pH is low or slightly low, the code is "too sour" (for sweet potato, only when pH is ✕ LOW, below 4.5). If pH is fine and two or more of N, P, K are low or slightly low, the code is "several low". Otherwise the code names the one nutrient that is short.</p>
+  <p>Every crop uses the <b>same seven codes</b>. Find your number, then open your crop's Fix-it page: <b>Kangkong p. 11 · Pechay p. 15 · Sweet potato p. 19 · Okra p. 23 · Eggplant p. 27 · Ampalaya p. 31 · Corn p. 35</b>.</p>
+  <div class="codelist">
+      <div class="row"><div class="badge" style="background:var(--c1)">1</div><div><b>All good</b><span>Follow the standard plan. Nothing to add.</span></div></div>
+      <div class="row"><div class="badge" style="background:var(--c2)">2</div><div><b>Too sour (acidic)</b><span>Lime first (page 36), wait 2 weeks, then fertilize.</span></div></div>
+      <div class="row"><div class="badge" style="background:var(--c3)">3</div><div><b>Alkaline</b><span>No lime or ash. Use ammonium sulfate and compost.</span></div></div>
+      <div class="row"><div class="badge" style="background:var(--c4)">4</div><div><b>Nitrogen (N) low</b><span>Add urea.</span></div></div>
+      <div class="row"><div class="badge" style="background:var(--c5)">5</div><div><b>Phosphorus (P) low</b><span>Add ammonium phosphate or Solophos.</span></div></div>
+      <div class="row"><div class="badge" style="background:var(--c6)">6</div><div><b>Potassium (K) low</b><span>Add muriate of potash (0-0-60).</span></div></div>
+      <div class="row"><div class="badge" style="background:var(--c7)">7</div><div><b>Several low</b><span>Add more 14-14-14 and compost, then test again.</span></div></div>
+      </div>
+  <p class="small" style="margin-top:2mm"><b>How the code is chosen:</b> pH comes first. If pH is low or slightly low the code is 2 (for sweet potato, only when pH is below 4.5), and if pH is too high it is 3. If pH is fine and two or more of N, P and K are short, the code is 7. If only one is short, the code is 4, 5 or 6.</p>
 
   <h3>My soil record</h3>
   <table class="record">
@@ -912,50 +1239,48 @@ td.num, th.num { text-align: center; }
     <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
     <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
     <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-    <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-    <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-    <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-    <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
   </table>
-  <div class="folio"><span>SakaSense Guidebook · Region VIII</span><span class="n">27</span></div>
+  <div class="folio"><span>Kasaka Guidebook</span><span class="n">39</span></div>
 </section>
 
-<!-- ============================ 28 BACK ============================ -->
+<!-- ============================ 40 SOURCES ============================ -->
 <section class="page">
-  <div class="run"><span><b>Sources</b></span><span>SakaSense Guidebook</span></div>
+  <div class="run"><span><b>Sources</b></span><span>Kasaka Guidebook</span></div>
   <h2>Sources and contacts</h2>
-  <h4 style="margin-top:0">Region VIII soil data</h4>
-  <ul class="small" style="color:var(--ink)">
-    <li>Bureau of Soils and Water Management (BSWM). Province of Leyte: Soil pH Map; Nutrient Status Maps, Phosphorus and Potassium (Key Corn Areas), 1:130,000. Soil Health Assessment – National Soil Sampling and Testing Project Phase III, with DA-RFO 8 and LGUs. 2018.</li>
-    <li>DA Regional Field Office 8 Mobile Soil Laboratory results, Southern Leyte (Daily Tribune, 29 May 2026).</li>
-    <li>Visayas State University research on Leyte soils: degraded upland soils are acidic (pH near 5) with low organic matter, N and P.</li>
+  <h4 style="margin-top:0;color:var(--good)">From Region 8 (Eastern Visayas)</h4>
+  <ul class="small" style="color:var(--ink);font-size:7pt;line-height:1.3">
+    <li>BSWM. Province of Leyte Soil pH Map; Nutrient Status Maps for P and K (Key Corn Areas), 1:130,000. Soil Health Assessment Phase III with DA-RFO 8 and LGUs, 2018.</li>
+    <li>DA RFO 8 Mobile Soil Laboratory results, Southern Leyte (Daily Tribune, 29 May 2026).</li>
+    <li>Asio, Tamayo and dela Cruz. Response of a traditional sweetpotato variety to fertilization in Leyte. Tropentag 2018 (VSU). PhilRootcrops, VSU, Baybay City.</li>
+    <li>Lina, Maranguit, Asio, Sabijon, Demain and Bolledo. Growth performance of corn with organic and inorganic fertilizers in a marginal upland soil. Annals of Tropical Research 36(Suppl):16–29, VSU, 2014 (Inopacan, Leyte).</li>
+    <li>Ratilla, Toledo and Capuno. Organic-based fertilizers for corn in the marginal uplands of Inopacan, Leyte. Annals of Tropical Research 36(Suppl):107–123, 2014.</li>
+    <li>PSA Regional Statistics Office 8. Corn Situationer, Leyte, 4th Quarter 2024 and 1st Quarter 2025.</li>
   </ul>
-  <h4>Crop practice and fertilizer rates</h4>
-  <ul class="small" style="color:var(--ink)">
-    <li>DA Regional Field Unit VII, Guide on Vegetable Production; ATI-VII Kangkong, Pechay and Okra Production Guides (2020).</li>
-    <li>Bureau of Plant Industry, Kangkong and Okra Production Guides. DA RFO 02 Okra and Sweet Potato Production Guides. DA Caraga pechay techno guide.</li>
-    <li>Asio L.G., Tamayo N.V., dela Cruz N.E. Response of a traditional sweetpotato variety to fertilization in Leyte, Philippines. Tropentag 2018 (VSU / CLSU).</li>
-    <li>Optimum fertilizer rate for kangkong on acid Ultisols (SANREM CRSP / IPB). Philippine pechay fertilizer study using 60-40-60 kg/ha as recommended rate.</li>
+  <h4 style="margin-top:2mm;color:var(--fair)">National guides, NOT from Region 8</h4>
+  <p class="small" style="font-size:7pt;line-height:1.3;margin-bottom:1mm">No Region 8 growing guide was found for these crops, so national guides are used. Ask your agriculture technician to confirm the amounts.</p>
+  <ul class="small" style="color:var(--ink);font-size:7pt;line-height:1.3">
+    <li>Kangkong, pechay, okra: DA RFU VII Guide on Vegetable Production; ATI-VII production guides (2020); BPI Kangkong and Okra guides; DA Caraga pechay guide; DA RFO 02 Okra and Sweet Potato guides.</li>
+    <li>Eggplant: ATI e-extension eggplant guide; BPI Organic Eggplant Production guide.</li>
+    <li>Ampalaya: BPI Ampalaya Production Guide (2013), including PSA 2011 figures for Eastern Visayas.</li>
+    <li>Corn: a Philippine extension guide for spacing, lime and harvest days (undated, no agency named).</li>
+    <li>Kangkong rate study on acid Ultisols (SANREM CRSP / IPB); Philippine pechay 60-40-60 kg/ha study.</li>
   </ul>
 
-  <div class="box tint">
+  <div class="box tint" style="margin-top:2mm">
     <h4 style="margin-top:0">Where to get help</h4>
-    <ul>
-      <li><b>Your City / Municipal Agriculture Office</b>: agricultural technicians, seeds, Mobile Soil Laboratory schedule</li>
+    <ul style="font-size:8pt;margin-bottom:0">
+      <li><b>City / Municipal Agriculture Office</b>: technicians, seeds, Mobile Soil Laboratory schedule</li>
       <li><b>DA Regional Field Office 8</b>, Tacloban City: Regional Soils Laboratory</li>
-      <li><b>VSU PhilRootcrops</b>, Baybay City, Leyte: clean sweet potato planting material and root crop advice</li>
+      <li><b>VSU PhilRootcrops</b>, Baybay City: clean sweet potato planting material</li>
       <li><b>SakaSense Venture Solutions</b>, Tacloban City: device and Kasaka app help · sakasense.com</li>
     </ul>
   </div>
-
-  <div class="box warn">
-    <p style="margin:0">The reading boxes for N, P and K are set for the SakaSense probe, using the BSWM ratings and the research above. They are a guide, not a guarantee. Check them against a DA laboratory test for your field, and ask your agriculture technician when unsure.</p>
+  <div class="box warn" style="margin-top:2mm"><p style="margin:0;font-size:7.6pt;line-height:1.35">The N, P and K reading boxes are SakaSense estimates for the probe, set using BSWM ratings and the research above. They are a guide, not a guarantee. Check them with a DA laboratory test.</p></div>
+  <div style="display:flex; align-items:center; gap:3mm; margin-top:2mm">
+    <img src="../../app/src/main/res/drawable-nodpi/logo_mark.png" alt="" style="width:10mm;height:10mm">
+    <div class="small"><b style="color:var(--brand-dark)">SakaSense Venture Solutions</b> · Tacloban City, Leyte<br>Kasaka Guidebook · Region VIII Edition · 2026</div>
   </div>
-  <div style="display:flex; align-items:center; gap:3mm; margin-top:4mm">
-    <img src="../../app/src/main/res/drawable-nodpi/logo_mark.png" alt="" style="width:11mm;height:11mm">
-    <div class="small"><b style="color:var(--brand-dark)">SakaSense Venture Solutions</b> · Tacloban City, Leyte<br>Soil Reading Guidebook, Region VIII Edition · 2026</div>
-  </div>
-  <div class="folio"><span>SakaSense Guidebook · Region VIII</span><span class="n">28</span></div>
+  <div class="folio"><span>Kasaka Guidebook</span><span class="n">40</span></div>
 </section>
 
 </body>

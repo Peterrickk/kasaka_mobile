@@ -33,9 +33,13 @@ class MainActivity : ComponentActivity() {
 
         val container = (application as KasakaApp).container
         lifecycleScope.launch { runCatching { container.soil.refreshAlerts() } }
-        // A demo account signed in before the app read temperature/humidity has readings without them.
         lifecycleScope.launch {
-            runCatching { if (container.session.session.first().user?.isDemo == true) container.soil.backfillDemoClimate() }
+            val demo = runCatching { container.session.session.first().user?.isDemo == true }.getOrDefault(false)
+            if (demo) runCatching { container.soil.refreshOldDemo() }
+            // Recommendations saved with the old 4-digit Guidebook codes get the Kasaka Guidebook's 1–7 codes.
+            runCatching { container.soil.upgradeToKasakaGuidebook() }
+            // A demo account signed in before the app read temperature/humidity has readings without them.
+            if (demo) runCatching { container.soil.backfillDemoClimate() }
         }
 
         setContent {

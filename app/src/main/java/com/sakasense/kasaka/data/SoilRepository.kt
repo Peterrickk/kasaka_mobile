@@ -15,6 +15,7 @@ import com.sakasense.kasaka.data.local.ReadingEntity
 import com.sakasense.kasaka.data.local.ReadingSource
 import com.sakasense.kasaka.data.local.RecommendationEntity
 import com.sakasense.kasaka.domain.Climate
+import com.sakasense.kasaka.domain.Doses
 import com.sakasense.kasaka.domain.Guidebook
 import com.sakasense.kasaka.domain.SoilAnalysis
 import com.sakasense.kasaka.domain.SoilAnalyzer
@@ -42,7 +43,8 @@ fun ReadingEntity.toSample() = SoilSample(ph, n, p, k)
 fun ReadingEntity.climate() = Climate(temperatureC, humidityPct)
 
 /** What the field device itself concluded (its on-board model), if it sent that along. */
-data class DeviceVerdict(val rankedCrops: List<RankedCrop>?, val guidebookCode: String?)
+/** What the device worked out itself. [guidebookCode] counts only if it was for [codeCrop], the crop the app analysed. */
+data class DeviceVerdict(val rankedCrops: List<RankedCrop>?, val guidebookCode: String?, val codeCrop: String? = null)
 
 class SoilRepository(private val db: KasakaDatabase) {
 
@@ -87,7 +89,7 @@ class SoilRepository(private val db: KasakaDatabase) {
     ): SoilAnalysis = db.withTransaction {
         val plot = requireNotNull(db.plots().get(plotId)) { "Plot $plotId not found" }
         val farmType = db.farms().get(plot.farmId)?.type ?: FarmType.RURAL_FIELD
-        val analysis = SoilAnalyzer.analyze(sample, plot.cropCurrent, farmType)
+        val analysis = SoilAnalyzer.analyze(sample, plot.cropCurrent, farmType, Doses.parseAreaM2(plot.areaLabel))
         val readingId = UUID.randomUUID().toString()
 
         db.readings().insert(
@@ -196,7 +198,32 @@ class SoilRepository(private val db: KasakaDatabase) {
 
     suspend fun clearAll() = withContext(Dispatchers.IO) { db.clearAllTables() }
 
+    /**
+     * Re-analyses recommendations saved before the Kasaka Guidebook (DB v2, 4-digit codes) so their
+     * code, prescription and crop follow the book. Call on app start; it is a no-op once done.
+     */
+    suspend fun upgradeToKasakaGuidebook() = withContext(Dispatchers.IO) {
+        db.withTransaction {
+            val old = db.recommendations().withoutCrop()
+            if (old.isEmpty()) return@withTransaction
+            val upgraded = old.mapNotNull { rec ->
+                val reading = rec.readingId?.let { db.readings().get(it) } ?: return@mapNotNull null
+                val plot = db.plots().get(rec.plotId) ?: return@mapNotNull null
+                val farmType = db.farms().get(plot.farmId)?.type ?: FarmType.RURAL_FIELD
+                SoilAnalyzer.analyze(reading.toSample(), plot.cropCurrent, farmType, Doses.parseAreaM2(plot.areaLabel))
+                    .toRecommendation(rec.plotId, rec.readingId, rec.timestamp, null)
+                    .copy(id = rec.id, generatedOnDevice = rec.generatedOnDevice)
+            }
+            db.recommendations().insert(upgraded)
+        }
+    }
+
     suspend fun backfillDemoClimate() = withContext(Dispatchers.IO) { DemoData.backfillClimate(db) }
+
+    /** Demo farms seeded by older versions grew Potato (not grown around Tacloban); swap in the current demo. */
+    suspend fun refreshOldDemo() = withContext(Dispatchers.IO) {
+        if (db.plots().get("plot-a")?.cropCurrent.equals("Potato", ignoreCase = true)) seedDemo()
+    }
 
     suspend fun seedDemo() = withContext(Dispatchers.IO) {
         db.clearAllTables()
@@ -206,12 +233,12 @@ class SoilRepository(private val db: KasakaDatabase) {
     private fun alertMessage(a: SoilAnalysis, plotName: String): String {
         val what = when (a.condition) {
             SoilCondition.BALANCED -> "Borderline nutrients"
-            SoilCondition.ACIDIC -> "Soil too acidic"
-            SoilCondition.ALKALINE -> "Soil too alkaline"
-            SoilCondition.N_LOW -> "Nitrogen deficiency"
-            SoilCondition.P_LOW -> "Phosphorus deficiency"
-            SoilCondition.K_LOW -> "Potassium deficiency"
-            SoilCondition.MULTI_LOW -> "Multiple nutrient deficiencies"
+            SoilCondition.ACIDIC -> "Soil too sour (code 2)"
+            SoilCondition.ALKALINE -> "Soil alkaline (code 3)"
+            SoilCondition.N_LOW -> "Nitrogen low (code 4)"
+            SoilCondition.P_LOW -> "Phosphorus low (code 5)"
+            SoilCondition.K_LOW -> "Potassium low (code 6)"
+            SoilCondition.MULTI_LOW -> "Several nutrients low (code 7)"
         }
         return if (a.status == PlotStatus.ACTION_REQUIRED) "$what — Action Required in $plotName" else "$what in $plotName"
     }
@@ -230,11 +257,16 @@ internal fun SoilAnalysis.toRecommendation(plotId: String, readingId: String?, a
         timestamp = at,
         healthIndex = healthIndex,
         rankedCrops = verdict?.rankedCrops?.takeIf { it.isNotEmpty() } ?: rankedCrops,
-        guidebookCode = verdict?.guidebookCode?.takeIf { Guidebook.find(it) != null } ?: guidebook.code,
+        // The device's code is kept only if it is a Kasaka Guidebook code (1–7) for this same crop;
+        // firmware 1.x sends 4-digit codes and no crop, so the app's own code is used then.
+        guidebookCode = verdict?.guidebookCode?.trim()
+            ?.takeIf { Guidebook.isCode(it) && verdict.codeCrop.equals(targetCrop, ignoreCase = true) }
+            ?: code.toString(),
         fertilizerProduct = fertilizer.product,
         fertilizerAmount = fertilizer.amount,
         fertilizerTiming = fertilizer.timing,
         fertilizerNotes = fertilizer.notes,
         insight = insight,
         generatedOnDevice = verdict != null,
+        crop = targetCrop,
     )

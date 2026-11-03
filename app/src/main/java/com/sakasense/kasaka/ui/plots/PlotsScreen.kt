@@ -258,8 +258,10 @@ private fun FarmLayout(plots: List<PlotSummary>, onOpen: (String) -> Unit) {
  * Finds the picture for a crop: drawable "crop_<name>" (e.g. crop_tomato, crop_sweet_potato).
  * Returns 0 when that picture hasn't been added yet, and the plot falls back to the emoji.
  */
-private fun cropImageRes(context: android.content.Context, crop: String?): Int {
+internal fun cropImageRes(context: android.content.Context, crop: String?): Int {
     if (crop.isNullOrBlank()) return 0
-    val name = "crop_" + crop.trim().lowercase().replace(" ", "_")
+    // Local names ("Kamote", "Talong") use the crop's picture too.
+    val known = com.sakasense.kasaka.domain.CropProfiles.find(crop.trim())?.name ?: crop.trim()
+    val name = "crop_" + known.lowercase().replace(" ", "_")
     return context.resources.getIdentifier(name, "drawable", context.packageName)
 }

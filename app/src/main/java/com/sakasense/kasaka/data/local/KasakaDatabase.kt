@@ -23,7 +23,7 @@ class Converters {
         FarmEntity::class, PlotEntity::class, DeviceEntity::class,
         ReadingEntity::class, RecommendationEntity::class, AlertEntity::class,
     ],
-    version = 2,
+    version = 3,
     exportSchema = true,
 )
 @TypeConverters(Converters::class)
@@ -38,7 +38,7 @@ abstract class KasakaDatabase : RoomDatabase() {
     companion object {
         fun create(context: Context): KasakaDatabase =
             Room.databaseBuilder(context, KasakaDatabase::class.java, "kasaka.db")
-                .addMigrations(MIGRATION_1_2)
+                .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
                 .build()
 
         /** v2: temperature and humidity on readings (firmware sends `temp` / `hum`). */
@@ -46,6 +46,13 @@ abstract class KasakaDatabase : RoomDatabase() {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL("ALTER TABLE readings ADD COLUMN temperatureC REAL")
                 db.execSQL("ALTER TABLE readings ADD COLUMN humidityPct REAL")
+            }
+        }
+
+        /** v3: Kasaka Guidebook codes 1–7 are per crop, so recommendations remember their crop. */
+        val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE recommendations ADD COLUMN crop TEXT")
             }
         }
     }

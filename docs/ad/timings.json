@@ -1,0 +1,149 @@
+{
+ "total": 69.129,
+ "lines": [
+  {
+   "scene": "pale",
+   "head": "Pale leaves",
+   "hl": "pale",
+   "text": "Your pechay leaves are turning pale.",
+   "start": 0.5,
+   "end": 2.452
+  },
+  {
+   "scene": "sack",
+   "head": "Complete?",
+   "hl": "complete",
+   "text": "So you buy a sack of complete fertilizer.",
+   "start": 3.202,
+   "end": 5.631
+  },
+  {
+   "scene": "sack",
+   "head": "Complete?",
+   "hl": "All three",
+   "text": "Nitrogen, phosphorus and potassium. All three.",
+   "start": 6.051,
+   "end": 9.289
+  },
+  {
+   "scene": "one",
+   "head": "Only one",
+   "hl": "only one",
+   "text": "But your soil may be short of only one.",
+   "start": 10.039,
+   "end": 12.205
+  },
+  {
+   "scene": "leyte",
+   "head": "Leyte soils",
+   "hl": "plenty",
+   "text": "In Leyte, six in ten farms already have plenty of potassium.",
+   "start": 12.955,
+   "end": 16.987
+  },
+  {
+   "scene": "waste",
+   "head": "Wasted",
+   "hl": "wasted",
+   "text": "Buy more, and that money is wasted.",
+   "start": 17.737,
+   "end": 19.875
+  },
+  {
+   "scene": "nitro",
+   "head": "Nitrogen",
+   "hl": "nitrogen",
+   "text": "Pale leaves usually point to nitrogen.",
+   "start": 20.625,
+   "end": 23.067
+  },
+  {
+   "scene": "nitro",
+   "head": "Nitrogen",
+   "hl": "green",
+   "text": "It keeps leaves green, and leafy crops like pechay need the most.",
+   "start": 23.487,
+   "end": 27.347
+  },
+  {
+   "scene": "test",
+   "head": "Test first",
+   "hl": "Test first",
+   "text": "So don't guess. Test first.",
+   "start": 28.097,
+   "end": 29.935
+  },
+  {
+   "scene": "probe",
+   "head": "Probe",
+   "hl": "SakaSense",
+   "text": "Push the SakaSense probe into moist soil, about ten centimeters deep.",
+   "start": 30.685,
+   "end": 35.112
+  },
+  {
+   "scene": "probe",
+   "head": "Five spots",
+   "hl": "five",
+   "text": "Take five readings across the bed.",
+   "start": 35.532,
+   "end": 37.523
+  },
+  {
+   "scene": "lcd",
+   "head": "N \u00b7 P \u00b7 K",
+   "hl": "nitrogen",
+   "text": "The screen shows your nitrogen, phosphorus and potassium.",
+   "start": 38.273,
+   "end": 41.729
+  },
+  {
+   "scene": "lcd",
+   "head": "Code 4",
+   "hl": "code four",
+   "text": "Plus one simple code. Here, code four: nitrogen low.",
+   "start": 42.149,
+   "end": 46.109
+  },
+  {
+   "scene": "app",
+   "head": "The fix",
+   "hl": "exact fix",
+   "text": "Open Kasaka, and code four gives you the exact fix.",
+   "start": 46.859,
+   "end": 50.507
+  },
+  {
+   "scene": "app",
+   "head": "50 grams",
+   "hl": "fifty grams",
+   "text": "Just fifty grams of urea per bed. About five tablespoons.",
+   "start": 50.927,
+   "end": 54.895
+  },
+  {
+   "scene": "skip",
+   "head": "Skip",
+   "hl": "Skip them",
+   "text": "Phosphorus and potassium are already good. Skip them.",
+   "start": 55.645,
+   "end": 59.032
+  },
+  {
+   "scene": "green",
+   "head": "Green again",
+   "hl": "green",
+   "text": "Then watch your pechay turn green again.",
+   "start": 59.782,
+   "end": 62.044
+  },
+  {
+   "scene": "cta",
+   "head": "Test first, then buy",
+   "hl": "then buy",
+   "text": "SakaSense and the Kasaka app. Test first, then buy.",
+   "start": 62.794,
+   "end": 66.529
+  }
+ ]
+}

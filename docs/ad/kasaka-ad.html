@@ -1,0 +1,601 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Kasaka Ad</title>
+<style>
+@font-face { font-family: "Inter"; src: url("../../app/src/main/res/font/inter.ttf"); font-weight: 100 900; }
+@font-face { font-family: "Space Grotesk"; src: url("../../app/src/main/res/font/space_grotesk.ttf"); font-weight: 300 700; }
+@font-face { font-family: "JetBrains Mono"; src: url("../../app/src/main/res/font/jetbrains_mono.ttf"); font-weight: 100 800; }
+:root {
+  --cream: #f4f2e8; --ink: #14251b; --green: #1d5e3a; --lime: #c6f432; --dark: #1a3d26;
+  --n: #0e9f55; --p: #c27c0e; --k: #9333ea; --red: #d93a2b; --c4: #0f766e;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 720px; height: 1280px; overflow: hidden; background: var(--cream); }
+body { font-family: "Inter", sans-serif; color: var(--ink); }
+#stage { position: relative; width: 720px; height: 1280px; overflow: hidden; background: var(--cream); }
+.abs { position: absolute; }
+.scene { position: absolute; inset: 0; opacity: 0; }
+
+/* heading: serif italic with a lime swash underneath, like the reference */
+#head { position: absolute; left: 0; right: 0; top: 118px; text-align: center; z-index: 5; }
+#headtxt { font-family: Georgia, "Times New Roman", serif; font-style: italic; font-size: 76px; color: var(--green); letter-spacing: -1px; display: inline-block; white-space: nowrap; }
+#swash { display: block; margin: 2px auto 0; }
+
+/* caption pill */
+#cap { position: absolute; left: 0; right: 0; top: 1046px; text-align: center; z-index: 6; }
+#cap span.pill { display: inline-block; background: #0d0f0e; color: #fff; font-weight: 800; font-size: 34px; padding: 12px 26px; border-radius: 18px; box-shadow: 0 6px 18px rgba(0,0,0,.18); }
+#cap b { color: var(--lime); font-weight: 800; }
+
+#wm { position: absolute; right: 22px; top: 22px; z-index: 6; display: flex; flex-direction: column; align-items: center; gap: 4px; opacity: .85; }
+#wm img { width: 46px; height: 46px; border-radius: 12px; background: #fff; padding: 4px; box-shadow: 0 2px 8px rgba(0,0,0,.15); }
+#wm span { font-family: "Space Grotesk"; font-weight: 700; font-size: 13px; color: var(--green); }
+
+.dot { position: absolute; width: 120px; height: 120px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-family: "Space Grotesk"; font-weight: 700; font-size: 56px; color: #fff; box-shadow: 0 8px 20px rgba(0,0,0,.18); }
+.dot small { position: absolute; bottom: -50px; background: #fff; padding: 2px 12px; border-radius: 20px; left: 50%; transform: translateX(-50%); font-family: "Inter"; font-size: 22px; font-weight: 700; color: var(--ink); white-space: nowrap; }
+.card { position: absolute; background: #fff; border-radius: 26px; box-shadow: 0 14px 40px rgba(20,37,27,.18); overflow: hidden; }
+.chip { position: absolute; background: #fff; border-radius: 40px; padding: 10px 20px; font-weight: 800; font-size: 24px; box-shadow: 0 6px 18px rgba(0,0,0,.16); white-space: nowrap; }
+.tag { display: inline-block; padding: 4px 10px; border-radius: 8px; color: #fff; font-family: "Space Grotesk"; font-weight: 700; font-size: 15px; letter-spacing: .03em; }
+
+/* lcd text */
+#lcdtxt { position: absolute; font-family: "JetBrains Mono"; font-weight: 600; color: #e9f0ff; text-shadow: 0 0 6px rgba(190,210,255,.7); line-height: 1.12; white-space: pre; }
+
+/* phone */
+#phone { position: absolute; left: 160px; top: 250px; width: 400px; height: 770px; border-radius: 52px; background: #111; padding: 14px; box-shadow: 0 24px 60px rgba(0,0,0,.28); }
+#screen { width: 100%; height: 100%; border-radius: 40px; background: #f3ead8; overflow: hidden; position: relative; }
+#screen .bar { height: 76px; background: #0f6e5c; color: #fff; display: flex; align-items: flex-end; padding: 0 22px 12px; font-family: "Space Grotesk"; font-weight: 700; font-size: 22px; }
+#screen .bar2 { height: 54px; background: #fff; display: flex; align-items: center; padding: 0 22px; font-weight: 700; font-size: 19px; color: #1f2a24; }
+.sc { position: absolute; left: 16px; right: 16px; background: #fff; border-radius: 18px; padding: 14px 16px; }
+.row3 { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; font-size: 18px; border-bottom: 1px solid #eef0ec; }
+.row3:last-child { border: none; }
+.row3 b { font-family: "Space Grotesk"; font-size: 20px; }
+
+/* cta */
+#s-cta { background: var(--dark); }
+</style>
+</head>
+<body>
+<div id="stage">
+
+  <!-- ===================== shared leaf (pechay) ===================== -->
+  <svg width="0" height="0" style="position:absolute">
+    <defs>
+      <linearGradient id="petiole" x1="0" x2="1"><stop offset="0" stop-color="#e9f3e2"/><stop offset=".5" stop-color="#ffffff"/><stop offset="1" stop-color="#d9ead0"/></linearGradient>
+      <radialGradient id="shine" cx=".38" cy=".3" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".35"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+      <filter id="soft" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="14" stdDeviation="14" flood-color="#14251b" flood-opacity=".22"/></filter>
+    </defs>
+  </svg>
+
+  <!-- 1 pale leaf -->
+  <div class="scene" id="s-pale"><div class="abs" id="leaf1" style="left:160px;top:250px;width:400px;height:720px"></div>
+    <svg class="abs" id="tri1" style="left:345px;top:300px" width="200" height="185" viewBox="0 0 260 240"><path d="M20 210 L240 210 L130 20 Z" fill="none" stroke="#b6ea2a" stroke-width="8" stroke-linejoin="round"/></svg>
+  </div>
+
+  <!-- 2 sack -->
+  <div class="scene" id="s-sack">
+    <div class="abs" id="sack" style="left:180px;top:280px;width:360px;height:520px"></div>
+    <div class="dot" id="sd-n" style="background:var(--n);left:70px;top:770px">N</div>
+    <div class="dot" id="sd-p" style="background:var(--p);left:300px;top:770px">P</div>
+    <div class="dot" id="sd-k" style="background:var(--k);left:530px;top:770px">K</div>
+  </div>
+
+  <!-- 3 only one -->
+  <div class="scene" id="s-one">
+    <svg class="abs" style="left:40px;top:300px" width="640" height="420" viewBox="0 0 640 420"><defs><linearGradient id="soil1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7a5234"/><stop offset="1" stop-color="#4e3320"/></linearGradient></defs>
+      <rect x="0" y="40" width="640" height="380" rx="28" fill="url(#soil1)"/><path d="M0 68 Q0 40 28 40 H612 Q640 40 640 68 V76 H0 Z" fill="#3e8a3a"/>
+    </svg>
+    <div class="dot" id="o-n" style="left:100px;top:470px;background:rgba(255,255,255,.12);border:8px dashed var(--red);color:var(--red);box-shadow:none">N<small style="color:var(--red)">LOW</small></div>
+    <div class="dot" id="o-p" style="left:300px;top:470px;background:var(--p)">P<small>✓ enough</small></div>
+    <div class="dot" id="o-k" style="left:500px;top:470px;background:var(--k)">K<small>✓ enough</small></div>
+  </div>
+
+  <!-- 4 leyte potassium -->
+  <div class="scene" id="s-leyte">
+    <div class="abs" style="left:60px;top:300px;width:600px;font-weight:800;font-size:28px">Potassium (K) on tested farms in Leyte</div>
+    <div class="abs" id="kbar" style="left:60px;top:360px;width:600px;height:86px;border-radius:16px;overflow:hidden;display:flex;gap:4px;background:var(--cream)">
+      <div style="flex:10;background:#e2efdc"></div><div style="flex:13;background:#a9d39a"></div><div style="flex:17;background:#5fa85a"></div>
+      <div style="flex:60;background:#2b6e35;color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk';font-weight:700;font-size:34px">60% HIGH</div>
+    </div>
+    <div class="abs" style="left:60px;top:456px;width:600px;display:flex;justify-content:space-between;font-size:18px;color:#55695e"><span>Low</span><span>Moderate</span><span>High</span></div>
+    <div class="abs" id="sixten" style="left:0;right:0;top:540px;text-align:center">
+      <div style="font-family:'Space Grotesk';font-weight:700;font-size:150px;color:var(--green);line-height:1">6 <span style="font-size:70px">in</span> 10</div>
+      <div style="font-size:30px;font-weight:700;margin-top:8px">farms already have <span style="background:var(--lime);padding:0 8px;border-radius:6px">plenty of K</span></div>
+    </div>
+    <div class="abs" id="farms" style="left:110px;top:800px;width:500px;display:grid;grid-template-columns:repeat(10,1fr);gap:8px"></div>
+    <div class="abs" style="left:60px;right:60px;top:990px;text-align:center;font-size:15px;color:#6b7c71">Source: BSWM Soil Health Assessment, Leyte, 2018</div>
+  </div>
+
+  <!-- 5 wasted -->
+  <div class="scene" id="s-waste">
+    <div class="abs" id="sack2" style="left:180px;top:320px;width:360px;height:520px"></div>
+    <div id="coins"></div>
+    <div class="abs" id="stamp" style="left:140px;top:500px;width:440px;text-align:center;border:10px solid var(--red);border-radius:20px;color:var(--red);font-family:'Space Grotesk';font-weight:700;font-size:92px;transform:rotate(-12deg);opacity:0;background:rgba(244,242,232,.65)">WASTED</div>
+  </div>
+
+  <!-- 6 nitrogen -->
+  <div class="scene" id="s-nitro"><div class="abs" id="leaf2" style="left:160px;top:250px;width:400px;height:720px"></div>
+    <div id="ndots"></div>
+    <div class="dot" id="nbadge" style="background:var(--n);left:520px;top:300px;width:110px;height:110px;font-size:52px">N</div>
+  </div>
+
+  <!-- 7 test first: the real device -->
+  <div class="scene" id="s-test">
+    <div class="card" id="devcard" style="left:40px;top:330px;width:640px;height:480px;background:url('assets/device_full.jpg') center/cover"></div>
+    <div class="chip" id="ch1" style="left:60px;top:830px">🌱 NPK soil probe</div>
+    <div class="chip" id="ch2" style="left:370px;top:830px">📟 SakaSense reader</div>
+  </div>
+
+  <!-- 8 probe into soil + five spots -->
+  <div class="scene" id="s-probe">
+    <div id="soilside">
+      <svg class="abs" style="left:0;top:560px" width="720" height="480" viewBox="0 0 720 480">
+        <defs><linearGradient id="soil" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7a5234"/><stop offset="1" stop-color="#4e3320"/></linearGradient></defs>
+        <rect x="0" y="40" width="720" height="440" fill="url(#soil)"/>
+        <path d="M0 40 Q60 22 120 40 T240 40 T360 40 T480 40 T600 40 T720 40 V56 H0Z" fill="#3e8a3a"/>
+        <g fill="#9b6d48" opacity=".55"><circle cx="80" cy="140" r="6"/><circle cx="220" cy="220" r="4"/><circle cx="600" cy="160" r="7"/><circle cx="480" cy="300" r="5"/><circle cx="140" cy="360" r="6"/><circle cx="640" cy="390" r="4"/><circle cx="330" cy="420" r="5"/></g>
+        <g id="ruler"><line x1="560" y1="56" x2="560" y2="230" stroke="#fff" stroke-width="4" stroke-dasharray="10 8"/><line x1="540" y1="230" x2="580" y2="230" stroke="#fff" stroke-width="4"/>
+        <text x="590" y="152" font-family="Space Grotesk" font-weight="700" font-size="34" fill="#fff">≈10 cm</text></g>
+      </svg>
+      <svg class="abs" id="probe" style="left:250px;top:180px" width="220" height="560" viewBox="0 0 220 560">
+        <path d="M110 0 C 110 60 40 60 60 130" stroke="#111" stroke-width="12" fill="none"/>
+        <rect x="35" y="120" width="150" height="150" rx="22" fill="#121212"/>
+        <rect x="52" y="150" width="116" height="90" rx="8" fill="#2f86d6"/>
+        <text x="110" y="190" text-anchor="middle" font-family="Inter" font-weight="800" font-size="17" fill="#fff">SOIL NPK</text>
+        <text x="110" y="215" text-anchor="middle" font-family="Inter" font-weight="600" font-size="13" fill="#e6f0ff">SENSOR</text>
+        <g fill="#cfd5d8" stroke="#8f979b" stroke-width="2"><path d="M62 270 h14 v240 l-7 22 l-7 -22z"/><path d="M103 270 h14 v240 l-7 22 l-7 -22z"/><path d="M144 270 h14 v240 l-7 22 l-7 -22z"/></g>
+      </svg>
+    </div>
+    <div id="bedtop" style="opacity:0">
+      <div class="abs" style="left:70px;top:420px;width:580px;height:300px;border-radius:24px;background:#7a5234;box-shadow:inset 0 0 0 10px #6a462b"></div>
+      <svg class="abs" style="left:70px;top:420px" width="580" height="300" viewBox="0 0 580 300"><polyline id="wpath" points="70,70 180,230 290,70 400,230 510,70" fill="none" stroke="#c6f432" stroke-width="6" stroke-dasharray="14 10"/></svg>
+      <div id="spots"></div>
+      <div class="abs" style="left:70px;top:735px;width:580px;text-align:center;font-size:22px;font-weight:700;color:#55695e">One bed, 1 m × 20 m · zig-zag (W) pattern</div>
+    </div>
+  </div>
+
+  <!-- 9 LCD: real device with the reading -->
+  <div class="scene" id="s-lcd">
+    <div class="card" id="lcdcard" style="left:20px;top:300px;width:680px;height:498px;background:url('assets/device_box.jpg') center/100% 100%">
+      <div id="lcdtxt" style="left:36.06%;top:42.84%;width:44.6%;height:19.84%;padding:7px 10px;font-size:23px"></div>
+    </div>
+    <div class="abs" id="code4" style="left:0;right:0;top:830px;text-align:center;opacity:0">
+      <span style="display:inline-flex;align-items:center;gap:18px;background:#fff;border-radius:60px;padding:12px 30px 12px 12px;box-shadow:0 10px 30px rgba(0,0,0,.18)">
+        <span style="width:96px;height:96px;border-radius:50%;background:var(--c4);color:#fff;font-family:'Space Grotesk';font-weight:700;font-size:62px;display:inline-flex;align-items:center;justify-content:center">4</span>
+        <span style="font-family:'Space Grotesk';font-weight:700;font-size:40px;color:var(--ink)">Nitrogen low</span></span>
+    </div>
+  </div>
+
+  <!-- 10 app -->
+  <div class="scene" id="s-app">
+    <div id="phone"><div id="screen">
+      <div class="bar">Kasaka</div>
+      <div class="bar2">Pechay · Bed 1 · Today</div>
+      <div class="sc" id="a-read" style="top:146px">
+        <div class="row3"><span><b style="color:var(--n)">N</b> Nitrogen</span><span><b>40</b> <span class="tag" style="background:#a86b00">! SLIGHTLY LOW</span></span></div>
+        <div class="row3"><span><b style="color:var(--p)">P</b> Phosphorus</span><span><b>28</b> <span class="tag" style="background:#1f7a3c">✓ GOOD</span></span></div>
+        <div class="row3"><span><b style="color:var(--k)">K</b> Potassium</span><span><b>140</b> <span class="tag" style="background:#1f7a3c">✓ GOOD</span></span></div>
+      </div>
+      <div class="sc" id="a-code" style="top:318px;display:flex;align-items:center;gap:16px">
+        <span id="a-badge" style="width:74px;height:74px;flex:none;border-radius:50%;background:var(--c4);color:#fff;font-family:'Space Grotesk';font-weight:700;font-size:46px;display:flex;align-items:center;justify-content:center">4</span>
+        <div><div style="font-size:14px;color:#55695e;font-weight:700;letter-spacing:.06em">FIX-IT CODE</div><div style="font-family:'Space Grotesk';font-weight:700;font-size:28px">Nitrogen low</div></div>
+      </div>
+      <div class="sc" id="a-fix" style="top:432px;border:3px solid transparent">
+        <div style="font-size:14px;color:#55695e;font-weight:700;letter-spacing:.06em">WHAT TO DO</div>
+        <div style="font-family:'Space Grotesk';font-weight:700;font-size:30px;line-height:1.15;margin:4px 0 8px">Add <span style="background:var(--lime);padding:0 6px;border-radius:6px">50 g urea</span> per bed</div>
+        <div style="font-size:17px;color:#33463a;line-height:1.35">Half dose, because N is slightly low.<br>About <b>5 tablespoons</b>, dissolved in 16 L of water.</div>
+      </div>
+      <div class="sc" id="a-skip" style="top:620px;font-size:17px;color:#33463a">P and K are good: <b>no 14-14-14 needed.</b></div>
+    </div></div>
+    <div class="chip" id="spoon" style="left:450px;top:930px;opacity:0;font-size:30px">🥄 × 5</div>
+  </div>
+
+  <!-- 11 skip -->
+  <div class="scene" id="s-skip">
+    <div class="card" id="k-urea" style="left:60px;top:330px;width:280px;height:400px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px">
+      <div id="sk-urea" style="width:180px;height:260px"></div>
+      <div style="font-family:'Space Grotesk';font-weight:700;font-size:30px;color:var(--n)">✓ 50 g</div>
+    </div>
+    <div class="card" id="k-comp" style="left:380px;top:330px;width:280px;height:400px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px">
+      <div id="sk-comp" style="width:180px;height:260px"></div>
+      <div style="font-family:'Space Grotesk';font-weight:700;font-size:30px;color:var(--red)">✗ Skip</div>
+      <svg class="abs" id="xmark" style="left:0;top:0" width="280" height="400" viewBox="0 0 280 400"><path d="M40 60 L240 300 M240 60 L40 300" stroke="#d93a2b" stroke-width="16" stroke-linecap="round" fill="none"/></svg>
+    </div>
+    <div class="dot" id="kp" style="background:var(--p);left:190px;top:790px;width:100px;height:100px;font-size:46px">P<small>✓ good</small></div>
+    <div class="dot" id="kk" style="background:var(--k);left:430px;top:790px;width:100px;height:100px;font-size:46px">K<small>✓ good</small></div>
+  </div>
+
+  <!-- 12 green again -->
+  <div class="scene" id="s-green"><div class="abs" id="leaf3" style="left:160px;top:250px;width:400px;height:720px"></div><div id="sparkles"></div></div>
+
+  <!-- 13 call to action -->
+  <div class="scene" id="s-cta">
+    <div class="abs" style="left:0;right:0;top:200px;display:flex;align-items:center;justify-content:center;gap:18px">
+      <img src="assets/logo.png" style="width:86px;height:86px;border-radius:20px;background:#fff;padding:6px">
+      <div style="font-family:'Space Grotesk';font-weight:700;font-size:44px;color:#fff;line-height:1">SakaSense<br><span style="font-size:28px;color:var(--lime)">+ Kasaka app</span></div>
+    </div>
+    <div class="card" id="ctacard" style="left:110px;top:390px;width:500px;height:375px;background:url('assets/device_full.jpg') center/cover"></div>
+    <div class="abs" id="ctatxt" style="left:0;right:0;top:820px;text-align:center">
+      <div style="font-family:Georgia,serif;font-style:italic;font-size:74px;color:#fff;line-height:1.05">Test first,<br>then buy.</div>
+      <svg width="360" height="26" viewBox="0 0 360 26" style="display:block;margin:6px auto 0"><path id="ctaswash" d="M8 16 Q120 4 200 12 T352 10" stroke="#c6f432" stroke-width="7" fill="none" stroke-linecap="round"/></svg>
+      <div style="font-family:'Space Grotesk';font-weight:700;font-size:30px;color:#cfe3d3;margin-top:18px">sakasense.com</div>
+    </div>
+  </div>
+
+  <div id="head"><span id="headtxt"></span><svg id="swash" width="300" height="26" viewBox="0 0 300 26"><path id="swashp" d="M8 16 Q100 4 170 12 T292 10" stroke="#c6f432" stroke-width="7" fill="none" stroke-linecap="round"/></svg></div>
+  <div id="cap"></div>
+  <div id="wm"><img src="assets/logo.png"><span>Kasaka</span></div>
+</div>
+
+<script src="timings.js"></script>
+<script>
+// ---------------------------------------------------------------- data
+const TIM = window.TIMINGS || {"total": 10, "lines": []};
+const L = TIM.lines;
+const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const seg = (t, a, b) => clamp((t - a) / (b - a));
+const easeOut = x => 1 - Math.pow(1 - x, 3);
+const easeInOut = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const back = x => { const c = 1.7; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
+const lerp = (a, b, x) => a + (b - a) * x;
+const $ = id => document.getElementById(id);
+const mix = (c1, c2, x) => { const p = c => [1, 3, 5].map(i => parseInt(c.substr(i, 2), 16)); const a = p(c1), b = p(c2);
+  return "#" + a.map((v, i) => Math.round(lerp(v, b[i], x)).toString(16).padStart(2, "0")).join(""); };
+const S = name => L.findIndex(l => l.scene === name);           // first line of a scene
+const Ls = i => L[i].start;
+
+// ---------------------------------------------------------------- realistic pechay leaf
+let UID = 0;
+const smooth = pts => {           // Catmull-Rom through the points -> cubic Bézier path
+  let d = `M${pts[0][0].toFixed(1)} ${pts[0][1].toFixed(1)}`;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const p0 = pts[Math.max(i - 1, 0)], p1 = pts[i], p2 = pts[i + 1], p3 = pts[Math.min(i + 2, pts.length - 1)];
+    const c1 = [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6], c2 = [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6];
+    d += ` C${c1[0].toFixed(1)} ${c1[1].toFixed(1)} ${c2[0].toFixed(1)} ${c2[1].toFixed(1)} ${p2[0].toFixed(1)} ${p2[1].toFixed(1)}`;
+  }
+  return d;
+};
+const BASE_Y = 448, TIP_Y = 30;
+const halfW = u => 164 * Math.pow(Math.sin(Math.PI * Math.min(Math.max(u, 0), 0.995)), 0.62) * (0.6 + 0.46 * u);
+const yAt = u => BASE_Y - (BASE_Y - TIP_Y) * u;
+const tones = c => ({ light: mix(c, "#f4f8d8", .32), mid: c, dark: mix(c, "#14230b", .42), vein: mix(c, "#ffffff", .62), rim: mix(c, "#0e1a08", .55) });
+
+function leaf(el, color) {
+  const id = "lf" + (UID++);
+  const N = 70, Lp = [], Rp = [];
+  for (let k = 0; k <= N; k++) {
+    const u = k / N, w = halfW(u), on = u > .06 && u < .985 ? 1 : 0;
+    const ruffL = on * (4.2 * Math.sin(u * 47) + 2.4 * Math.sin(u * 23 + 1.3) + 1.2 * Math.sin(u * 91));
+    const ruffR = on * (4.0 * Math.sin(u * 44 + .7) + 2.6 * Math.sin(u * 26 + .2) + 1.2 * Math.sin(u * 87 + 2));
+    Lp.push([200 - w - ruffL, yAt(u)]); Rp.push([200 + w * 1.02 + ruffR, yAt(u)]);
+  }
+  const blade = smooth([...Lp, ...Rp.reverse().slice(1)]) + " Z";
+  // midrib: a tapered, slightly raised white rib
+  const rib = [], ribR = [];
+  for (let k = 0; k <= 30; k++) { const u = k / 30, y = lerp(705, TIP_Y + 18, u), w = lerp(13, 1.6, Math.pow(u, .8)), x = 200 + 4 * Math.sin(u * 2.4);
+    rib.push([x - w, y]); ribR.push([x + w, y]); }
+  const ribPath = smooth([...rib, ...ribR.reverse()]) + " Z";
+  // secondary veins and a fine net between them
+  let veins = "", fine = "";
+  for (let k = 0; k < 8; k++) {
+    const u = .1 + k * .105, y0 = yAt(u), u1 = Math.min(u + .13, .96), x0 = 200 + 4 * Math.sin((1 - (y0 - TIP_Y) / (705 - TIP_Y)) * 2.4);
+    [-1, 1].forEach(s => {
+      const ex = 200 + s * halfW(u1) * .86, ey = yAt(u1) + 6, cx = x0 + s * halfW(u) * .42, cy = y0 - 10;
+      veins += `<path d="M${x0} ${y0} Q${cx} ${cy} ${ex} ${ey}"/>`;
+      for (let j = 1; j <= 3; j++) {           // tertiary branches off this vein
+        const t = j / 4, bx = (1 - t) * (1 - t) * x0 + 2 * (1 - t) * t * cx + t * t * ex, by = (1 - t) * (1 - t) * y0 + 2 * (1 - t) * t * cy + t * t * ey;
+        fine += `<path d="M${bx.toFixed(1)} ${by.toFixed(1)} q${(s * 10).toFixed(1)} ${(-20 - j * 3)} ${(s * 4).toFixed(1)} ${(-38 - j * 4)}"/>`;
+        fine += `<path d="M${bx.toFixed(1)} ${by.toFixed(1)} q${(s * 14).toFixed(1)} ${(12)} ${(s * 30).toFixed(1)} ${(16)}"/>`;
+      }
+    });
+  }
+  const t = tones(color);
+  el.innerHTML = `<svg width="400" height="720" viewBox="0 0 400 720" style="overflow:visible">
+  <defs>
+    <radialGradient id="${id}g" cx=".42" cy=".42" r=".72">
+      <stop data-tone="light" offset="0" stop-color="${t.light}"/><stop data-tone="mid" offset=".55" stop-color="${t.mid}"/><stop data-tone="dark" offset="1" stop-color="${t.dark}"/></radialGradient>
+    <linearGradient id="${id}p" x1="0" x2="1"><stop offset="0" stop-color="#d4e2bf"/><stop offset=".38" stop-color="#fbfdf6"/><stop offset=".62" stop-color="#f2f7e8"/><stop offset="1" stop-color="#c3d6a8"/></linearGradient>
+    <linearGradient id="${id}r" x1="0" x2="1"><stop offset="0" stop-color="#dfe9cf"/><stop offset=".5" stop-color="#ffffff"/><stop offset="1" stop-color="#d2e1bd"/></linearGradient>
+    <filter id="${id}n" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".022 .03" numOctaves="4" seed="${7 + UID}"/>
+      <feColorMatrix values="0 0 0 0 .1  0 0 0 0 .16  0 0 0 0 .05  0 0 0 -1.6 1.15"/></filter>
+    <filter id="${id}b"><feGaussianBlur stdDeviation="16"/></filter>
+    <filter id="${id}s" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="6" dy="18" stdDeviation="16" flood-color="#14251b" flood-opacity=".28"/></filter>
+    <clipPath id="${id}c"><path d="${blade}"/></clipPath>
+  </defs>
+  <g filter="url(#${id}s)">
+    <path d="M184 712 C186 640 186 540 186 440 L214 440 C214 540 215 640 218 712 Q201 722 184 712 Z" fill="url(#${id}p)"/>
+    <g stroke="#b6cb98" stroke-width="1.2" opacity=".45"><path d="M193 708 L194 446"/><path d="M207 708 L206 446"/></g>
+    <path d="${blade}" fill="url(#${id}g)"/>
+  </g>
+  <g clip-path="url(#${id}c)">
+    <rect x="0" y="0" width="400" height="460" filter="url(#${id}n)" opacity=".4"/>
+    <g data-tone="fine" stroke="${t.vein}" stroke-width="1.1" fill="none" opacity=".28">${fine}</g>
+    <g stroke="${t.dark}" stroke-width="5" fill="none" stroke-linecap="round" opacity=".22" transform="translate(1.5 2)">${veins}</g>
+    <g data-tone="vein" stroke="${t.vein}" stroke-width="3.6" fill="none" stroke-linecap="round" opacity=".75">${veins}</g>
+    <ellipse cx="148" cy="210" rx="62" ry="128" transform="rotate(-18 148 210)" fill="#fff" opacity=".2" filter="url(#${id}b)"/>
+    <ellipse cx="262" cy="150" rx="26" ry="60" transform="rotate(18 262 150)" fill="#fff" opacity=".12" filter="url(#${id}b)"/>
+  </g>
+  <path d="${ribPath}" fill="url(#${id}r)"/>
+  <path d="${blade}" data-tone="rim" fill="none" stroke="${t.rim}" stroke-width="1.6" opacity=".45"/>
+</svg>`;
+}
+const GREEN = "#3d7f2c", PALE = "#cdc576";
+leaf($("leaf1"), GREEN); leaf($("leaf2"), PALE); leaf($("leaf3"), PALE);
+function setLeaf(el, c) {
+  const t = tones(c);
+  el.querySelectorAll("[data-tone]").forEach(n => {
+    const k = n.dataset.tone;
+    if (n.tagName === "stop") n.setAttribute("stop-color", t[k]);
+    else if (k === "vein" || k === "fine") n.setAttribute("stroke", t.vein);
+    else if (k === "rim") n.setAttribute("stroke", t.rim);
+  });
+}
+
+// ---------------------------------------------------------------- realistic woven fertilizer sack
+function sack(el, o) {
+  const id = "sk" + (UID++);
+  const W = 340, H = 480;
+  const body = "M54 66 Q42 46 60 42 Q170 56 280 42 Q298 46 286 66 Q318 214 306 404 Q302 444 262 452 Q170 468 78 452 Q38 444 34 404 Q22 214 54 66 Z";
+  let pile = "";
+  if (o.pile) {
+    const cols = o.prill ? ["#ffffff", "#f3f3ef", "#e4e5e0"] : ["#d8d2c8", "#bdb6aa", "#e5c6bd", "#9ea2a5", "#cfc9bf"];
+    let seed = 11; const rnd = () => (seed = (seed * 9301 + 49297) % 233280) / 233280;
+    for (let i = 0; i < 150; i++) {
+      const a = rnd() * Math.PI, r = Math.sqrt(rnd());
+      const x = 170 + Math.cos(a) * r * 175 * (rnd() > .5 ? 1 : -1) * .95, y = 470 - Math.sin(a) * r * 20 + rnd() * 6;
+      const rr = 3 + rnd() * 3.2;
+      pile += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${rr.toFixed(1)}" fill="url(#${id}gr${i % cols.length})"/>`;
+    }
+    pile = cols.map((c, i) => `<radialGradient id="${id}gr${i}" cx=".35" cy=".3" r=".75"><stop offset="0" stop-color="#ffffff"/><stop offset=".35" stop-color="${c}"/><stop offset="1" stop-color="${mix(c, "#000000", .35)}"/></radialGradient>`).join("")
+      .replace(/^/, "<defs>") + "</defs>" + pile;
+  }
+  el.innerHTML = `<svg width="100%" height="100%" viewBox="0 0 ${W} ${H + 20}" style="overflow:visible">
+  <defs>
+    <linearGradient id="${id}b" x1="0" x2="1"><stop offset="0" stop-color="#d9d6cb"/><stop offset=".3" stop-color="#fbfaf4"/><stop offset=".55" stop-color="#f3f1e8"/><stop offset=".85" stop-color="#d8d4c7"/><stop offset="1" stop-color="#bdb8a9"/></linearGradient>
+    <radialGradient id="${id}v" cx=".5" cy=".45" r=".62"><stop offset=".6" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".22"/></radialGradient>
+    <pattern id="${id}w" width="5" height="5" patternUnits="userSpaceOnUse">
+      <rect width="5" height="5" fill="none"/><path d="M0 1.2 H5" stroke="#000" stroke-opacity=".07" stroke-width="1.3"/><path d="M1.2 0 V5" stroke="#fff" stroke-opacity=".5" stroke-width="1.1"/><path d="M3.7 0 V5" stroke="#000" stroke-opacity=".04" stroke-width="1"/></pattern>
+    <filter id="${id}bl"><feGaussianBlur stdDeviation="5"/></filter>
+    <filter id="${id}sh" x="-20%" y="-20%" width="140%" height="160%"><feGaussianBlur stdDeviation="12"/></filter>
+    <clipPath id="${id}c"><path d="${body}"/></clipPath>
+  </defs>
+  <ellipse cx="172" cy="462" rx="150" ry="18" fill="#14251b" opacity=".28" filter="url(#${id}sh)"/>
+  <path d="${body}" fill="url(#${id}b)"/>
+  <g clip-path="url(#${id}c)">
+    <path d="M40 150 Q100 140 150 200 Q190 250 300 230 L300 420 Q170 440 40 420 Z" fill="#000" opacity="0"/>
+    <path d="M60 150 Q120 170 160 140" stroke="#000" stroke-opacity=".07" stroke-width="9" fill="none" filter="url(#${id}bl)"/>
+    <path d="M90 390 Q150 360 250 400" stroke="#000" stroke-opacity=".08" stroke-width="12" fill="none" filter="url(#${id}bl)"/>
+    <path d="M250 110 Q262 220 238 330" stroke="#000" stroke-opacity=".07" stroke-width="10" fill="none" filter="url(#${id}bl)"/>
+    <path d="M86 120 Q96 240 84 350" stroke="#fff" stroke-opacity=".6" stroke-width="10" fill="none" filter="url(#${id}bl)"/>
+    <path d="M60 160 Q170 182 284 160 L292 330 Q170 352 52 330 Z" fill="${o.band}"/>
+    <path d="M58 172 Q170 194 286 172" stroke="#fff" stroke-opacity=".9" stroke-width="3" fill="none"/>
+    <path d="M54 318 Q170 340 290 318" stroke="#fff" stroke-opacity=".9" stroke-width="3" fill="none"/>
+    <text x="170" y="214" text-anchor="middle" font-family="Inter" font-weight="800" font-size="${o.small || 19}" fill="#fff" letter-spacing="2">${o.name}</text>
+    <text x="170" y="272" text-anchor="middle" font-family="Space Grotesk" font-weight="700" font-size="${o.big || 52}" fill="#fff">${o.grade}</text>
+    <text x="170" y="304" text-anchor="middle" font-family="Inter" font-weight="700" font-size="15" fill="#fff" opacity=".9">${o.sub || ""}</text>
+    <text x="170" y="388" text-anchor="middle" font-family="Inter" font-weight="800" font-size="20" fill="#3b3f3a" opacity=".8">NET WT. ${o.kg || 50} KG</text>
+    <rect width="${W}" height="${H}" fill="url(#${id}w)"/>
+    <rect width="${W}" height="${H}" fill="url(#${id}v)"/>
+    <path d="M44 64 Q170 84 296 64 L296 92 Q170 110 44 92 Z" fill="#000" opacity=".07"/>
+  </g>
+  <path d="M56 80 Q170 98 284 80" stroke="#9c9789" stroke-width="2.6" stroke-dasharray="7 5" fill="none"/>
+  <path d="M60 87 Q170 105 280 87" stroke="#fff" stroke-opacity=".7" stroke-width="1.2" stroke-dasharray="7 5" fill="none"/>
+  <path d="${body}" fill="none" stroke="#a9a493" stroke-width="1.4" opacity=".7"/>
+  ${pile}
+</svg>`;
+}
+
+
+sack($("sack"), {name: "COMPLETE FERTILIZER", small: 15, grade: "14-14-14", sub: "N - P₂O₅ - K₂O", band: "#2f7a3e", pile: true});
+sack($("sack2"), {name: "COMPLETE FERTILIZER", small: 15, grade: "14-14-14", sub: "N - P₂O₅ - K₂O", band: "#2f7a3e", pile: true});
+sack($("sk-urea"), {name: "UREA", grade: "46-0-0", sub: "NITROGEN", band: "#1f5f99", pile: true, prill: true});
+sack($("sk-comp"), {name: "COMPLETE", grade: "14-14-14", sub: "N - P₂O₅ - K₂O", band: "#2f7a3e", pile: true});
+// farms grid (6 of 10 high K)
+$("farms").innerHTML = Array.from({length: 10}, (_, i) => `<div class="fm" style="height:44px;border-radius:10px;background:${i < 6 ? "#2b6e35" : "#d7dccf"}"></div>`).join("");
+// coins
+$("coins").innerHTML = Array.from({length: 9}, (_, i) => `<div class="abs coin" style="left:${120 + (i * 61) % 480}px;top:0;width:64px;height:64px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffe9a0,#e0a91e 60%,#a5760b);color:#7a5200;font-family:'Segoe UI',Arial;font-weight:900;font-size:36px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 10px rgba(0,0,0,.2)">₱</div>`).join("");
+// N dots that climb the leaf
+const NP = [[200, 690], [200, 560], [200, 430], [200, 300], [200, 170], [130, 140], [270, 140], [110, 260], [290, 260]];
+$("ndots").innerHTML = Array.from({length: 14}, () => `<div class="abs nd" style="width:30px;height:30px;border-radius:50%;background:var(--n);color:#fff;font:700 16px 'Space Grotesk';display:flex;align-items:center;justify-content:center;opacity:0">N</div>`).join("");
+// five spots in a W
+const SP = [[70, 70], [180, 230], [290, 70], [400, 230], [510, 70]];
+$("spots").innerHTML = SP.map((p, i) => `<div class="abs spot" style="left:${70 + p[0] - 30}px;top:${420 + p[1] - 30}px;width:60px;height:60px;border-radius:50%;background:#fff;border:6px solid var(--green);font:700 28px 'Space Grotesk';color:var(--green);display:flex;align-items:center;justify-content:center;opacity:0">${i + 1}</div>`).join("");
+// sparkles
+$("sparkles").innerHTML = Array.from({length: 8}, (_, i) => `<div class="abs sp" style="left:${160 + (i * 97) % 400}px;top:${270 + (i * 131) % 380}px;font-size:${30 + (i % 3) * 12}px;color:#c6f432;opacity:0">✦</div>`).join("");
+
+// ---------------------------------------------------------------- captions
+function chunks(line) {
+  const words = line.text.split(" ");
+  const out = []; let cur = [];
+  words.forEach(w => { cur.push(w); if (cur.join(" ").length > 16 || /[.,:]$/.test(w)) { out.push(cur); cur = []; } });
+  if (cur.length) out.push(cur);
+  const total = line.text.length; let acc = 0;
+  return out.map(ws => { const s = ws.join(" "); const a = acc; acc += s.length + 1;
+    return { words: ws, t0: line.start + (line.end - line.start) * a / total }; });
+}
+const CH = L.map(chunks);
+const norm = w => w.toLowerCase().replace(/[^a-z0-9]/g, "");
+function capHTML(line, ws) {
+  const hl = line.hl.split(" ").map(norm);
+  return ws.map(w => hl.includes(norm(w)) ? `<b>${w}</b>` : w).join(" ");
+}
+
+// ---------------------------------------------------------------- scenes
+const SCENES = ["pale", "sack", "one", "leyte", "waste", "nitro", "test", "probe", "lcd", "app", "skip", "green", "cta"];
+function sceneRange(name) {
+  const i = S(name); const j = SCENES.indexOf(name);
+  const start = j === 0 ? 0 : Ls(i) - 0.3;
+  const nxt = SCENES[j + 1];
+  const end = nxt ? Ls(S(nxt)) - 0.3 : TIM.total + 1;
+  return [start, end];
+}
+
+const U = {
+  pale(t) {
+    const a = Ls(S("pale"));
+    const k = seg(t, a + 0.2, a + 1.9);
+    setLeaf($("leaf1"), mix(GREEN, PALE, easeInOut(k)));
+    $("leaf1").style.transform = `rotate(${lerp(-18, -10, easeOut(seg(t, 0, 2.5)))}deg) scale(${lerp(.92, 1, easeOut(seg(t, 0, 1)))})`;
+    const tr = seg(t, a + 1.3, a + 1.7);
+    $("tri1").style.opacity = tr; $("tri1").style.transform = `scale(${lerp(.6, 1, back(tr))})`;
+  },
+  sack(t) {
+    const a = Ls(S("sack")), b = Ls(S("sack") + 1);
+    const d = seg(t, a - 0.2, a + 0.5);
+    $("sack").style.transform = `translateY(${lerp(-700, 0, back(d))}px) rotate(${lerp(-8, 0, d)}deg)`;
+    [["sd-n", 0], ["sd-p", 1.0], ["sd-k", 2.0]].forEach(([id, o]) => {
+      const x = seg(t, b + o, b + o + 0.35);
+      $(id).style.opacity = x; $(id).style.transform = `translateY(${lerp(-260, 0, easeOut(x))}px) scale(${lerp(.4, 1, back(x))})`;
+    });
+  },
+  one(t) {
+    const a = Ls(S("one"));
+    ["o-p", "o-k"].forEach((id, i) => { const x = seg(t, a - 0.2 + i * .15, a + .2 + i * .15); $(id).style.transform = `scale(${lerp(.3, 1, back(x))})`; $(id).style.opacity = x; });
+    const n = seg(t, a + 0.6, a + 1.0);
+    $("o-n").style.opacity = n; $("o-n").style.transform = `scale(${lerp(.3, 1, back(n)) * (1 + .06 * Math.sin(t * 9) * n)})`;
+  },
+  leyte(t) {
+    const a = Ls(S("leyte"));
+    const g = seg(t, a, a + 1.2);
+    $("kbar").style.clipPath = `inset(0 ${100 - 100 * easeOut(g)}% 0 0 round 16px)`;
+    const s = seg(t, a + 1.4, a + 1.9);
+    $("sixten").style.opacity = s; $("sixten").style.transform = `scale(${lerp(.7, 1, back(s))})`;
+    document.querySelectorAll(".fm").forEach((f, i) => { const x = seg(t, a + 2.2 + i * .1, a + 2.5 + i * .1); f.style.opacity = x; f.style.transform = `scale(${lerp(.4, 1, back(x))})`; });
+  },
+  waste(t) {
+    const a = Ls(S("waste"));
+    document.querySelectorAll(".coin").forEach((c, i) => {
+      const x = seg(t, a - 0.2 + i * .14, a + 0.9 + i * .14);
+      c.style.transform = `translateY(${lerp(180, 900, x * x)}px) rotate(${x * 300}deg)`; c.style.opacity = x > 0 && x < 1 ? 1 - x * .4 : 0;
+    });
+    const s = seg(t, a + 1.2, a + 1.5);
+    $("stamp").style.opacity = s; $("stamp").style.transform = `rotate(-12deg) scale(${lerp(2.2, 1, easeOut(s))})`;
+    $("sack2").style.filter = `grayscale(${s})`;
+  },
+  nitro(t) {
+    const a = Ls(S("nitro")), b = Ls(S("nitro") + 1);
+    const nb = seg(t, a + 0.6, a + 1.0);
+    $("nbadge").style.opacity = nb; $("nbadge").style.transform = `scale(${lerp(.3, 1, back(nb))})`;
+    $("leaf2").style.transform = "rotate(-10deg)";
+    const g = seg(t, b, b + 3.4);
+    setLeaf($("leaf2"), mix(PALE, GREEN, easeInOut(g)));
+    document.querySelectorAll(".nd").forEach((d, i) => {
+      const x = seg(t, b - 0.2 + i * .22, b + 1.5 + i * .22);
+      const path = [NP[0], NP[1], NP[2], NP[3], NP[4 + (i % 5)]];
+      const f = x * (path.length - 1), k = Math.min(Math.floor(f), path.length - 2), r = f - k;
+      const px = lerp(path[k][0], path[k + 1][0], r), py = lerp(path[k][1], path[k + 1][1], r);
+      // follow the leaf's rotation (-10deg around its center 200,360)
+      const ang = -10 * Math.PI / 180, cx = 200, cy = 360;
+      const rx = cx + (px - cx) * Math.cos(ang) - (py - cy) * Math.sin(ang), ry = cy + (px - cx) * Math.sin(ang) + (py - cy) * Math.cos(ang);
+      d.style.left = (160 + rx - 15) + "px"; d.style.top = (250 + ry - 15) + "px";
+      d.style.opacity = x > 0 && x < 1 ? Math.min(1, x * 6, (1 - x) * 6) : 0;
+    });
+  },
+  test(t) {
+    const a = Ls(S("test"));
+    const c = seg(t, a - 0.3, a + 0.4);
+    $("devcard").style.opacity = c; $("devcard").style.transform = `scale(${lerp(.8, 1, back(c))}) rotate(${lerp(4, -1.5, c)}deg)`;
+    [["ch1", 1.0], ["ch2", 1.5]].forEach(([id, o]) => { const x = seg(t, a + o, a + o + .3); $(id).style.opacity = x; $(id).style.transform = `translateY(${lerp(30, 0, easeOut(x))}px)`; });
+  },
+  probe(t) {
+    const a = Ls(S("probe")), b = Ls(S("probe") + 1);
+    const d = seg(t, a + 0.3, a + 2.6);
+    $("probe").style.transform = `translateY(${lerp(-60, 300, easeInOut(d))}px)`;
+    $("ruler").style.opacity = seg(t, a + 2.4, a + 2.8);
+    const sw = seg(t, b - 0.25, b + 0.15);
+    $("soilside").style.opacity = 1 - sw; $("bedtop").style.opacity = sw;
+    $("wpath").style.strokeDashoffset = 0; $("wpath").style.opacity = seg(t, b + 1.4, b + 1.8);
+    document.querySelectorAll(".spot").forEach((s, i) => { const x = seg(t, b + .1 + i * .3, b + .4 + i * .3); s.style.opacity = x; s.style.transform = `scale(${lerp(.3, 1, back(x))})`; });
+  },
+  lcd(t) {
+    const a = Ls(S("lcd")), b = Ls(S("lcd") + 1);
+    const c = seg(t, a - 0.3, a + 0.3);
+    $("lcdcard").style.opacity = c; $("lcdcard").style.transform = `scale(${lerp(.9, 1, easeOut(c))})`;
+    const full = ["PECHAY   BED 1", "N:40  P:28  K:140", "", "CODE 4  N LOW"];
+    const type = (s, t0) => s.slice(0, Math.floor(clamp((t - t0) / 0.05, 0, s.length)));
+    const blink = t > b + 1.6 && Math.floor((t - b) * 3) % 2 === 0 && t < b + 3.2;
+    $("lcdtxt").textContent = [type(full[0], a + 0.4), type(full[1], a + 1.0), "", blink ? "" : type(full[3], b + 0.6)].join("\n");
+    const k = seg(t, b + 2.2, b + 2.6);
+    $("code4").style.opacity = k; $("code4").style.transform = `scale(${lerp(.5, 1, back(k))})`;
+  },
+  app(t) {
+    const a = Ls(S("app")), b = Ls(S("app") + 1);
+    const p = seg(t, a - 0.3, a + 0.35);
+    $("phone").style.transform = `translateY(${lerp(500, 0, easeOut(p))}px)`;
+    [["a-read", .3], ["a-code", .9], ["a-fix", 1.8], ["a-skip", b - a + 2.6]].forEach(([id, o]) => { const x = seg(t, a + o, a + o + .35); $(id).style.opacity = x; $(id).style.transform = `translateY(${lerp(24, 0, easeOut(x))}px)`; });
+    const pulse = seg(t, a + 1.2, a + 1.5) * (1 - seg(t, a + 2.4, a + 2.8));
+    $("a-badge").style.transform = `scale(${1 + .15 * pulse * Math.abs(Math.sin((t - a) * 6))})`;
+    const f = seg(t, b, b + 0.4);
+    $("a-fix").style.borderColor = f > 0 ? `rgba(198,244,50,${f})` : "transparent";
+    $("a-fix").style.boxShadow = `0 0 ${30 * f}px rgba(150,200,40,${.55 * f})`;
+    const sp = seg(t, b + 2.2, b + 2.6);
+    $("spoon").style.opacity = sp; $("spoon").style.transform = `scale(${lerp(.4, 1, back(sp))})`;
+  },
+  skip(t) {
+    const a = Ls(S("skip"));
+    [["k-urea", 0], ["k-comp", .2]].forEach(([id, o]) => { const x = seg(t, a - .3 + o, a + .2 + o); $(id).style.opacity = x; $(id).style.transform = `translateY(${lerp(60, 0, easeOut(x))}px)`; });
+    [["kp", .5], ["kk", .8]].forEach(([id, o]) => { const x = seg(t, a + o, a + o + .3); $(id).style.opacity = x; $(id).style.transform = `scale(${lerp(.4, 1, back(x))})`; });
+    const x = seg(t, a + 2.2, a + 2.6);
+    $("xmark").style.opacity = x; $("xmark").style.transform = `scale(${lerp(1.6, 1, easeOut(x))})`;
+    $("k-comp").style.filter = `grayscale(${x * .8})`;
+  },
+  green(t) {
+    const a = Ls(S("green"));
+    const g = seg(t, a, a + 1.8);
+    setLeaf($("leaf3"), mix(PALE, GREEN, easeInOut(g)));
+    $("leaf3").style.transform = `rotate(${lerp(-14, -6, g)}deg) scale(${lerp(.95, 1.04, easeOut(g))})`;
+    document.querySelectorAll(".sp").forEach((s, i) => { const x = seg(t, a + 1 + i * .12, a + 1.6 + i * .12); s.style.opacity = Math.sin(x * Math.PI); s.style.transform = `scale(${lerp(.3, 1.3, x)}) rotate(${x * 90}deg)`; });
+  },
+  cta(t) {
+    const a = Ls(S("cta"));
+    const c = seg(t, a - 0.2, a + 0.4);
+    $("ctacard").style.opacity = c; $("ctacard").style.transform = `scale(${lerp(.85, 1, back(c))})`;
+    const x = seg(t, a + 1.6, a + 2.1);
+    $("ctatxt").style.opacity = x; $("ctatxt").style.transform = `translateY(${lerp(30, 0, easeOut(x))}px)`;
+    const sw = $("ctaswash"); sw.style.strokeDasharray = 400; sw.style.strokeDashoffset = 400 * (1 - seg(t, a + 2.1, a + 2.6));
+  },
+};
+
+// ---------------------------------------------------------------- render(t)
+function render(t) {
+  // scenes: crossfade + slight slide
+  SCENES.forEach(name => {
+    const [s, e] = sceneRange(name);
+    const el = $("s-" + name);
+    const vin = name === "pale" ? 1 : seg(t, s, s + 0.3), vout = 1 - seg(t, e, e + 0.3);
+    const v = Math.min(vin, vout);
+    el.style.opacity = v;
+    el.style.display = v > 0 ? "block" : "none";
+    el.style.transform = `translateX(${(1 - vin) * 60 - (1 - vout) * 60}px)`;
+    if (v > 0) U[name](t);
+  });
+  // current line
+  let i = 0; L.forEach((l, k) => { if (t >= l.start - 0.05) i = k; });
+  const line = L[i];
+  // heading (hidden on the end card)
+  const hs = (() => { let k = i; while (k > 0 && L[k - 1].head === line.head) k--; return L[k].start; })();
+  const hx = seg(t, hs - 0.15, hs + 0.2);
+  const ht = $("headtxt");
+  if (ht.textContent !== line.head) ht.textContent = line.head;
+  const showHead = line.scene !== "cta";
+  $("head").style.opacity = showHead ? hx : 0;
+  $("head").style.transform = `translateY(${lerp(-20, 0, easeOut(hx))}px)`;
+  const sw = $("swashp"); sw.style.strokeDasharray = 330; sw.style.strokeDashoffset = 330 * (1 - seg(t, hs + 0.1, hs + 0.5));
+  $("swash").setAttribute("width", Math.min(560, Math.max(180, ht.offsetWidth * .9)));
+  // caption
+  let html = "";
+  if (t >= L[0].start - 0.05 && !(line.scene === "cta" && t > line.start + 1.6)) {
+    const cs = CH[i]; let c = cs[0];
+    cs.forEach(ch => { if (t >= ch.t0 - 0.03) c = ch; });
+    html = `<span class="pill">${capHTML(line, c.words)}</span>`;
+  }
+  $("cap").innerHTML = html;
+  $("wm").style.opacity = line.scene === "cta" ? 0 : .85;
+}
+window.render = render;
+window.TOTAL = TIM.total;
+render(window.START || 0);
+</script>
+</body>
+</html>

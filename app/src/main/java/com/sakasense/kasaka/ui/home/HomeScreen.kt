@@ -241,7 +241,7 @@ private fun InsightCard(s: PlotSummary, onClick: () -> Unit) {
             Column(Modifier.weight(1f)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(s.plot.name, style = MaterialTheme.typography.titleSmall, modifier = Modifier.weight(1f), maxLines = 1, overflow = TextOverflow.Ellipsis)
-                    Text("GB ${rec.guidebookCode}", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary)
+                    Text("Code ${rec.guidebookCode}", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary)
                 }
                 Spacer(Modifier.height(4.dp))
                 Text(rec.insight, style = MaterialTheme.typography.bodyMedium)

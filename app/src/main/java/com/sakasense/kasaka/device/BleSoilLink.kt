@@ -116,11 +116,17 @@ internal class BleSoilLink(private val context: Context, private val adapter: Bl
         }
     }
 
-    /** Asks the device to take a reading and waits for the JSON result. */
-    suspend fun measure(timeoutMs: Long = 45_000): DevicePayload {
+    /**
+     * Asks the device to take a reading and waits for the JSON result. [crop] (a Kasaka Guidebook crop,
+     * or null for "best crop") is sent first so the device works out the code for the crop that is planted.
+     */
+    suspend fun measure(crop: String?, timeoutMs: Long = 45_000): DevicePayload {
         val g = gatt ?: throw IOException("Not connected")
         val cmd = command ?: throw IOException("Not connected")
         while (notifications.tryReceive().isSuccess) { /* drop stale data */ }
+
+        write(g, cmd, (DeviceProtocol.CMD_CROP + crop.orEmpty()).toByteArray())
+        expect<Event.CharacteristicWritten>(5_000, "The device did not accept the command")
 
         write(g, cmd, DeviceProtocol.CMD_MEASURE.toByteArray())
         if (!expect<Event.CharacteristicWritten>(5_000, "The device did not accept the command").ok) throw IOException("The device rejected the measure command")

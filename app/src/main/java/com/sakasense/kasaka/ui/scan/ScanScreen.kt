@@ -45,6 +45,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -73,6 +74,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sakasense.kasaka.LocalAppContainer
 import com.sakasense.kasaka.data.PlotSummary
+import com.sakasense.kasaka.device.DevicePayload
 import com.sakasense.kasaka.device.FoundDevice
 import com.sakasense.kasaka.domain.Climate
 import com.sakasense.kasaka.domain.CropProfiles
@@ -84,6 +86,8 @@ import com.sakasense.kasaka.ui.components.NutrientTile
 import com.sakasense.kasaka.ui.components.SectionHeader
 import com.sakasense.kasaka.ui.components.StatusChip
 import com.sakasense.kasaka.ui.plots.AddPlotSheet
+import com.sakasense.kasaka.ui.formatPh
+import com.sakasense.kasaka.ui.guidebook.OpenGuide
 import com.sakasense.kasaka.ui.plots.RecommendationCard
 import com.sakasense.kasaka.ui.theme.KasakaTheme
 
@@ -93,7 +97,7 @@ fun ScanScreen(
     presetPlotId: String?,
     onBack: (() -> Unit)?,
     onOpenPlot: (String) -> Unit,
-    onOpenGuide: (String) -> Unit,
+    onOpenGuide: OpenGuide,
 ) {
     val container = LocalAppContainer.current
     val vm: ScanViewModel = viewModel { ScanViewModel(container, presetPlotId) }
@@ -128,7 +132,7 @@ fun ScanScreen(
                     Text(
                         when (ui.step) {
                             ScanStep.CONNECT -> "Take a reading"
-                            ScanStep.READY -> if (ui.manual) "Enter reading" else "Ready to measure"
+                            ScanStep.READY -> if (ui.manual) "Enter reading" else "Spot ${ui.spots.size + 1} of $SPOTS_PER_BED"
                             ScanStep.MEASURING -> "Measuring…"
                             ScanStep.RESULT -> "Result"
                         }
@@ -170,7 +174,7 @@ fun ScanScreen(
                 when (step) {
                     ScanStep.CONNECT -> ConnectStep(state, scan, vm::connect, vm::useManualEntry)
                     ScanStep.READY -> ReadyStep(state, vm)
-                    ScanStep.MEASURING -> MeasuringStep(ui.progress)
+                    ScanStep.MEASURING -> MeasuringStep(ui.progress, ui.spots.size + 1)
                     ScanStep.RESULT -> ResultStep(state, onOpenPlot, onOpenGuide, vm::measureAgain)
                 }
                 Spacer(Modifier.height(16.dp))
@@ -261,12 +265,16 @@ private fun ReadyStep(state: ScanState, vm: ScanViewModel) {
         ManualForm(enabled = ui.selectedPlotId != null, onSubmit = vm::submitManual)
     } else {
         KCard(Modifier.fillMaxWidth()) {
-            Text("Before you measure", style = MaterialTheme.typography.titleSmall)
+            Text("Take 5 readings in this bed", style = MaterialTheme.typography.titleSmall)
+            Text(
+                "One spot can mislead you. Kasaka averages the five spots for you (Guidebook page 4).",
+                style = MaterialTheme.typography.bodySmall, color = KasakaTheme.colors.muted,
+            )
             Spacer(Modifier.height(8.dp))
             listOf(
-                "Clear away surface litter and stones.",
-                "Push the three probe prongs fully into moist soil, 10–15 cm deep.",
-                "Keep the device still until the reading finishes.",
+                "Pick 5 spots in a zig-zag (W shape) across the bed, away from the edges, compost piles and fresh fertilizer.",
+                "Clear away grass, mulch and stones. The soil should be moist, not dry and not flooded.",
+                "Push the probe 10–15 cm deep with no air gaps, and keep it still until the numbers stop changing (up to 45 seconds).",
             ).forEachIndexed { i, t ->
                 Row(Modifier.padding(vertical = 3.dp)) {
                     Text("${i + 1}.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.primary, modifier = Modifier.width(22.dp))
@@ -274,8 +282,14 @@ private fun ReadyStep(state: ScanState, vm: ScanViewModel) {
                 }
             }
         }
+        if (ui.spots.isNotEmpty()) SpotsCard(ui.spots)
         Button(onClick = vm::measure, enabled = ui.selectedPlotId != null, modifier = Modifier.fillMaxWidth().height(56.dp)) {
-            Text("Measure soil")
+            Text("Measure spot ${ui.spots.size + 1} of $SPOTS_PER_BED")
+        }
+        if (ui.spots.isNotEmpty()) {
+            OutlinedButton(onClick = vm::finishSpots, modifier = Modifier.fillMaxWidth().height(52.dp)) {
+                Text("Use the average of ${ui.spots.size} ${if (ui.spots.size == 1) "spot" else "spots"}")
+            }
         }
     }
 
@@ -283,6 +297,28 @@ private fun ReadyStep(state: ScanState, vm: ScanViewModel) {
         AddPlotSheet(onDismiss = { addPlot = false }) { name, crop, area ->
             vm.quickAddPlot(name, crop, area)
             addPlot = false
+        }
+    }
+}
+
+@Composable
+private fun SpotsCard(spots: List<DevicePayload>) {
+    KCard(Modifier.fillMaxWidth(), contentPadding = 14.dp) {
+        Text("Measured so far", style = MaterialTheme.typography.titleSmall)
+        Spacer(Modifier.height(6.dp))
+        spots.forEachIndexed { i, s ->
+            Row(Modifier.padding(vertical = 2.dp)) {
+                Text("Spot ${i + 1}", style = MaterialTheme.typography.bodySmall, color = KasakaTheme.colors.muted, modifier = Modifier.width(64.dp))
+                Text("pH ${formatPh(s.ph)} · N ${s.n} · P ${s.p} · K ${s.k}", style = MaterialTheme.typography.bodySmall)
+            }
+        }
+        if (spots.size > 1) {
+            val avg = average(spots)
+            HorizontalDivider(Modifier.padding(vertical = 6.dp), color = KasakaTheme.colors.border)
+            Row {
+                Text("Average", style = MaterialTheme.typography.labelMedium, modifier = Modifier.width(64.dp))
+                Text("pH ${formatPh(avg.ph)} · N ${avg.n} · P ${avg.p} · K ${avg.k}", style = MaterialTheme.typography.labelMedium)
+            }
         }
     }
 }
@@ -321,6 +357,10 @@ private fun ManualForm(enabled: Boolean, onSubmit: (Double, Int, Int, Int, Clima
 
     KCard(Modifier.fillMaxWidth()) {
         Text("Values from the device screen", style = MaterialTheme.typography.titleSmall)
+        Text(
+            "Take 5 readings in a zig-zag across the bed, add each number up and divide by 5, then type the averages.",
+            style = MaterialTheme.typography.bodySmall, color = KasakaTheme.colors.muted,
+        )
         Spacer(Modifier.height(10.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             NumberField(ph, { ph = it }, "pH", "3–10", Modifier.weight(1f), decimal = true, isError = ph.isNotEmpty() && !phOk)
@@ -359,14 +399,14 @@ private fun NumberField(value: String, onChange: (String) -> Unit, label: String
 }
 
 @Composable
-private fun MeasuringStep(progress: Float) {
+private fun MeasuringStep(progress: Float, spot: Int) {
     Column(Modifier.fillMaxWidth().padding(top = 32.dp), horizontalAlignment = Alignment.CenterHorizontally) {
         Box(contentAlignment = Alignment.Center) {
             Pulse(active = true, size = 200.dp, dot = false)
             Text("${(progress * 100).toInt()}%", style = MaterialTheme.typography.headlineMedium)
         }
         Spacer(Modifier.height(28.dp))
-        Text("Reading soil and air", style = MaterialTheme.typography.titleLarge)
+        Text("Reading spot $spot of $SPOTS_PER_BED", style = MaterialTheme.typography.titleLarge)
         Spacer(Modifier.height(6.dp))
         Text(
             "Keep the probe in the soil and the device still.",
@@ -378,7 +418,7 @@ private fun MeasuringStep(progress: Float) {
 }
 
 @Composable
-private fun ResultStep(state: ScanState, onOpenPlot: (String) -> Unit, onOpenGuide: (String) -> Unit, onAgain: () -> Unit) {
+private fun ResultStep(state: ScanState, onOpenPlot: (String) -> Unit, onOpenGuide: OpenGuide, onAgain: () -> Unit) {
     val a = state.ui.analysis ?: return
     val plotName = state.plots.firstOrNull { it.plot.id == state.ui.savedPlotId }?.plot?.name
     KCard(Modifier.fillMaxWidth()) {

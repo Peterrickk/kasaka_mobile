@@ -96,6 +96,7 @@ data class RecommendationEntity(
     val timestamp: Long,
     val healthIndex: Int,
     val rankedCrops: List<RankedCrop>,
+    /** Kasaka Guidebook code, "1"–"7" (4-digit codes of the old SakaSense Guidebook before DB v3). */
     val guidebookCode: String,
     val fertilizerProduct: String,
     val fertilizerAmount: String,
@@ -103,6 +104,8 @@ data class RecommendationEntity(
     val fertilizerNotes: String,
     val insight: String,
     val generatedOnDevice: Boolean,
+    /** Crop the advice was written for; with [guidebookCode] it opens that crop's Fix-it page. Null before DB v3. */
+    val crop: String? = null,
 )
 
 @Entity(

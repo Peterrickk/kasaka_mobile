@@ -96,7 +96,7 @@ fun statusLabel(status: PlotStatus) = when (status) {
 @Composable
 fun levelColor(level: Level): Color = when (level) {
     Level.LOW -> KasakaTheme.colors.action
-    Level.FAIR -> KasakaTheme.colors.attention
+    Level.SLIGHTLY_LOW -> KasakaTheme.colors.attention
     Level.GOOD -> KasakaTheme.colors.healthy
     Level.HIGH -> KasakaTheme.colors.info
 }
@@ -241,7 +241,7 @@ private fun ClimateTile(icon: ImageVector, label: String, value: Double?, unit: 
     }
 }
 
-/** 4-segment meter: Low · Fair · Good · High. */
+/** 4-segment meter: the Guidebook's boxes Low · Slightly low · Good · High. */
 @Composable
 fun LevelMeter(level: Level, color: Color, modifier: Modifier = Modifier) {
     Row(modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(3.dp)) {

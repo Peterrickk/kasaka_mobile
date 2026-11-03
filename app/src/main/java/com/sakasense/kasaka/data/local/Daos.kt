@@ -81,6 +81,9 @@ interface ReadingDao {
     )
     suspend fun allLatest(): List<ReadingEntity>
 
+    @Query("SELECT * FROM readings WHERE id = :id")
+    suspend fun get(id: String): ReadingEntity?
+
     @Query("SELECT * FROM readings WHERE plotId = :plotId ORDER BY timestamp DESC")
     suspend fun allForPlot(plotId: String): List<ReadingEntity>
 
@@ -108,6 +111,10 @@ interface RecommendationDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(recs: List<RecommendationEntity>)
+
+    /** Saved before DB v3, with an old SakaSense Guidebook code. */
+    @Query("SELECT * FROM recommendations WHERE crop IS NULL")
+    suspend fun withoutCrop(): List<RecommendationEntity>
 }
 
 @Dao

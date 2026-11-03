@@ -85,7 +85,14 @@ fun CropPicker(selected: String?, onSelect: (String?) -> Unit) {
     Text("Current crop", style = MaterialTheme.typography.labelLarge)
     FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(0.dp)) {
         FilterChip(selected = selected == null, onClick = { onSelect(null) }, label = { Text("Not planted yet") })
-        CropProfiles.all.forEach { c ->
+        CropProfiles.inBook.forEach { c ->
+            FilterChip(selected = selected == c.name, onClick = { onSelect(c.name) }, label = { Text("${c.emoji} ${c.name}") })
+        }
+    }
+    // Crops from earlier app versions: still supported, with the book's general amounts.
+    Text("Other crops · general advice", style = MaterialTheme.typography.labelMedium, color = KasakaTheme.colors.muted)
+    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(0.dp)) {
+        CropProfiles.all.filterNot { it.inGuidebook }.forEach { c ->
             FilterChip(selected = selected == c.name, onClick = { onSelect(c.name) }, label = { Text("${c.emoji} ${c.name}") })
         }
     }

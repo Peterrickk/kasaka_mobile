@@ -10,8 +10,10 @@ import com.sakasense.kasaka.data.local.ReadingSource
 import com.sakasense.kasaka.data.local.RecommendationEntity
 import com.sakasense.kasaka.data.toRecommendation
 import com.sakasense.kasaka.device.ConnectedDevice
+import com.sakasense.kasaka.device.DevicePayload
 import com.sakasense.kasaka.device.FoundDevice
 import com.sakasense.kasaka.domain.Climate
+import com.sakasense.kasaka.domain.CropProfiles
 import com.sakasense.kasaka.domain.SoilAnalysis
 import com.sakasense.kasaka.domain.SoilSample
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,8 +24,13 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.math.pow
+import kotlin.math.roundToInt
 
 enum class ScanStep { CONNECT, READY, MEASURING, RESULT }
+
+/** "Always take five readings per bed and use the average" (Kasaka Guidebook, page 4). */
+const val SPOTS_PER_BED = 5
 
 data class ScanUi(
     val step: ScanStep = ScanStep.CONNECT,
@@ -37,6 +44,8 @@ data class ScanUi(
     val climate: Climate? = null,
     val recommendation: RecommendationEntity? = null,
     val savedPlotId: String? = null,
+    /** Device readings taken so far at the spots of this bed; saved as one averaged reading. */
+    val spots: List<DevicePayload> = emptyList(),
 )
 
 data class ScanState(
@@ -65,7 +74,10 @@ class ScanViewModel(private val c: AppContainer, presetPlotId: String?) : ViewMo
 
     fun startScan() = c.devices.startScan(viewModelScope)
 
-    fun selectPlot(id: String) = ui.update { it.copy(selectedPlotId = id, error = null) }
+    // Spots from one bed must not be averaged into another plot's reading.
+    fun selectPlot(id: String) = ui.update {
+        if (it.selectedPlotId == id) it.copy(error = null) else it.copy(selectedPlotId = id, error = null, spots = emptyList())
+    }
 
     fun connect(device: FoundDevice) {
         if (ui.value.connectingTo != null) return
@@ -79,22 +91,42 @@ class ScanViewModel(private val c: AppContainer, presetPlotId: String?) : ViewMo
 
     fun useManualEntry() = ui.update { it.copy(step = ScanStep.READY, manual = true, connected = null, error = null) }
 
+    /** Measures one spot; after the last spot the average is saved. */
     fun measure() {
         val plotId = ui.value.selectedPlotId ?: return ui.update { it.copy(error = "Choose which plot you are measuring first.") }
         ui.update { it.copy(step = ScanStep.MEASURING, progress = 0f, error = null) }
         viewModelScope.launch {
             runCatching {
-                val payload = c.devices.measure(viewModelScope) { p -> ui.update { it.copy(progress = p) } }
-                val serial = payload.sn ?: ui.value.connected?.serial
-                val source = if (ui.value.connected?.device?.simulated == true) ReadingSource.DEMO else ReadingSource.BLUETOOTH
-                save(
-                    plotId, SoilSample(payload.ph, payload.n, payload.p, payload.k), Climate(payload.temp, payload.hum),
-                    source, serial, payload.bat, DeviceVerdict(payload.crops, payload.gb),
-                )
+                val crop = state.value.plots.firstOrNull { it.plot.id == plotId }?.plot?.cropCurrent
+                    ?.let { CropProfiles.find(it) }?.takeIf { it.inGuidebook }?.name
+                val payload = c.devices.measure(viewModelScope, crop) { p -> ui.update { it.copy(progress = p) } }
+                val spots = ui.value.spots + payload
+                if (spots.size < SPOTS_PER_BED) ui.update { it.copy(step = ScanStep.READY, spots = spots) }
+                else saveSpots(plotId, spots)
             }.onFailure { e ->
                 ui.update { it.copy(step = ScanStep.READY, error = e.message ?: "Measurement failed") }
             }
         }
+    }
+
+    /** Saves the average of the spots measured so far, for a bed too small for five. */
+    fun finishSpots() {
+        val plotId = ui.value.selectedPlotId ?: return
+        val spots = ui.value.spots.ifEmpty { return }
+        viewModelScope.launch {
+            runCatching { saveSpots(plotId, spots) }
+                .onFailure { e -> ui.update { it.copy(error = e.message ?: "Could not save the reading") } }
+        }
+    }
+
+    private suspend fun saveSpots(plotId: String, spots: List<DevicePayload>) {
+        val last = spots.last()
+        val serial = spots.firstNotNullOfOrNull { it.sn } ?: ui.value.connected?.serial
+        val source = if (ui.value.connected?.device?.simulated == true) ReadingSource.DEMO else ReadingSource.BLUETOOTH
+        // The device's own crop ranking and code describe one spot, so they're kept only for a single-spot reading.
+        val verdict = if (spots.size == 1) DeviceVerdict(last.crops, last.gb, last.gbCrop) else null
+        val climate = Climate(spots.mapNotNull { it.temp }.averageOrNull(), spots.mapNotNull { it.hum }.averageOrNull())
+        save(plotId, average(spots), climate, source, serial, last.bat, verdict)
     }
 
     fun submitManual(ph: Double, n: Int, p: Int, k: Int, climate: Climate) {
@@ -111,7 +143,7 @@ class ScanViewModel(private val c: AppContainer, presetPlotId: String?) : ViewMo
         ui.update { it.copy(step = ScanStep.RESULT, analysis = analysis, climate = climate, recommendation = rec, savedPlotId = plotId, progress = 1f) }
     }
 
-    fun measureAgain() = ui.update { it.copy(step = ScanStep.READY, analysis = null, climate = null, recommendation = null, error = null) }
+    fun measureAgain() = ui.update { it.copy(step = ScanStep.READY, analysis = null, climate = null, recommendation = null, error = null, spots = emptyList()) }
 
     fun disconnect() {
         c.devices.disconnect()
@@ -131,4 +163,19 @@ class ScanViewModel(private val c: AppContainer, presetPlotId: String?) : ViewMo
         c.devices.stopScan()
         c.devices.disconnect()
     }
+}
+
+/** "Add each number up and divide by 5" — or by however many spots were measured. */
+internal fun average(spots: List<DevicePayload>) = SoilSample(
+    ph = spots.map { it.ph }.average().round(2),
+    n = spots.map { it.n }.average().roundToInt(),
+    p = spots.map { it.p }.average().roundToInt(),
+    k = spots.map { it.k }.average().roundToInt(),
+)
+
+private fun List<Double>.averageOrNull() = if (isEmpty()) null else average().round(1)
+
+private fun Double.round(decimals: Int): Double {
+    val f = 10.0.pow(decimals)
+    return (this * f).roundToInt() / f
 }

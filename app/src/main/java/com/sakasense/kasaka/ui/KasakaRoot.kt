@@ -44,9 +44,12 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.sakasense.kasaka.data.Session
+import com.sakasense.kasaka.domain.Guidebook
+import com.sakasense.kasaka.domain.SoilCondition
 import com.sakasense.kasaka.ui.alerts.AlertsScreen
 import com.sakasense.kasaka.ui.auth.AuthScreen
-import com.sakasense.kasaka.ui.guidebook.GuideDetailScreen
+import com.sakasense.kasaka.ui.guidebook.GuideCropScreen
+import com.sakasense.kasaka.ui.guidebook.GuideTopicScreen
 import com.sakasense.kasaka.ui.guidebook.GuidebookScreen
 import com.sakasense.kasaka.ui.home.HomeScreen
 import com.sakasense.kasaka.ui.onboarding.OnboardingScreen
@@ -67,7 +70,9 @@ import kotlin.reflect.KClass
 @Serializable object ProfileRoute
 @Serializable object AlertsRoute
 @Serializable data class PlotDetailRoute(val plotId: String)
-@Serializable data class GuideDetailRoute(val code: String)
+/** A crop chapter of the Kasaka Guidebook; [code] 1–7 opens its Fix-it page at that code, 0 the chapter start. */
+@Serializable data class GuideCropRoute(val crop: String, val code: Int = 0)
+@Serializable data class GuideTopicRoute(val id: String)
 
 private data class Tab(val label: String, val icon: ImageVector, val route: Any, val type: KClass<*>)
 
@@ -151,14 +156,26 @@ fun KasakaRoot(session: Session) {
                             if (route.plotId != null) popUpTo<PlotDetailRoute> { inclusive = true }
                         }
                     },
-                    onOpenGuide = { nav.navigate(GuideDetailRoute(it)) },
+                    onOpenGuide = { crop, code -> nav.navigate(guideRoute(crop, code)) },
                 )
             }
             composable<GuidebookRoute> {
-                GuidebookScreen(onOpen = { nav.navigate(GuideDetailRoute(it)) })
+                GuidebookScreen(
+                    onOpenCrop = { crop, code -> nav.navigate(GuideCropRoute(crop, code ?: 0)) },
+                    onOpenTopic = { nav.navigate(GuideTopicRoute(it)) },
+                )
             }
-            composable<GuideDetailRoute> { entry ->
-                GuideDetailScreen(code = entry.toRoute<GuideDetailRoute>().code, onBack = { nav.popBackStack() })
+            composable<GuideCropRoute> { entry ->
+                val route = entry.toRoute<GuideCropRoute>()
+                GuideCropScreen(
+                    crop = route.crop,
+                    code = route.code.takeIf { it in 1..7 },
+                    onBack = { nav.popBackStack() },
+                    onOpenTopic = { nav.navigate(GuideTopicRoute(it)) },
+                )
+            }
+            composable<GuideTopicRoute> { entry ->
+                GuideTopicScreen(id = entry.toRoute<GuideTopicRoute>().id, onBack = { nav.popBackStack() })
             }
             composable<ProfileRoute> {
                 ProfileScreen(session = session)
@@ -171,7 +188,7 @@ fun KasakaRoot(session: Session) {
                     plotId = entry.toRoute<PlotDetailRoute>().plotId,
                     onBack = { nav.popBackStack() },
                     onScan = { nav.navigate(ScanRoute(it)) },
-                    onOpenGuide = { nav.navigate(GuideDetailRoute(it)) },
+                    onOpenGuide = { crop, code -> nav.navigate(guideRoute(crop, code)) },
                 )
             }
         }
@@ -216,4 +233,11 @@ private fun KasakaBottomBar(nav: NavHostController, current: Tab?) {
             )
         }
     }
+}
+
+/** A recommendation's crop + code opens that Fix-it page; anything else (e.g. an old 4-digit code) the Code finder. */
+private fun guideRoute(crop: String?, code: String): Any {
+    val guide = Guidebook.crop(crop)
+    val c = SoilCondition.fromCode(code)
+    return if (guide != null && c != null) GuideCropRoute(guide.crop, c.code) else GuideTopicRoute("codes")
 }

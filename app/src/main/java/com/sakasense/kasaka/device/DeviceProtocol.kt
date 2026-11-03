@@ -20,6 +20,8 @@ object DeviceProtocol {
     val CCCD: UUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")
 
     const val CMD_MEASURE = "MEASURE"
+    /** "CROP:Okra" tells firmware 2.x which crop is planted; "CROP:" lets it pick the best one. Older firmware ignores it. */
+    const val CMD_CROP = "CROP:"
     val NAME_PREFIXES = listOf("SakaSense", "KS-")
     const val MTU = 247
 
@@ -41,8 +43,10 @@ data class DevicePayload(
     val ts: Long? = null,
     /** Optional: the device's own on-board crop ranking. */
     val crops: List<RankedCrop>? = null,
-    /** Optional: Guidebook code shown on the device LCD. */
+    /** Optional: Kasaka Guidebook code (1–7) shown on the device LCD. */
     val gb: String? = null,
+    /** Optional: the crop [gb] was worked out for (firmware 2.x). */
+    val gbCrop: String? = null,
 )
 
 @Serializable
